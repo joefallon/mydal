@@ -1,0 +1,40 @@
+{
+  "rules": {
+    "adjacent-overload-signatures": true,
+    "arrow-parens": true,
+    "class-name": true,
+    "eofline": true,
+    "indent": [ true, "spaces" ],
+    "interface-name": true,
+    "member-access": [ true, "check-accessor" ],
+    "ordered-imports": true,
+    "new-parens": true,
+    "no-default-export": true,
+    "no-duplicate-variable": true,
+    "no-eval": true,
+    "no-internal-module": true,
+    "no-invalid-this": true,
+    "no-mergeable-namespace": true,
+    "no-namespace": [ true, "allow-declarations" ],
+    "no-switch-case-fall-through": true,
+    "no-unused-expression": true,
+    "no-unused-new": true,
+    "no-unused-variable": [ true ],
+    "no-use-before-declare": true,
+    "no-var-keyword": true,
+    "only-arrow-functions": [ true, "allow-declarations" ],
+    "one-line": [
+      true,
+      "check-open-brace",
+      "check-whitespace"
+    ],
+    "quotemark": [
+      true,
+      "single"
+    ],
+    "semicolon": true,
+    "switch-default": true,
+    "use-isnan": true,
+    "variable-name": [ true, "ban-keywords", "check-format", "allow-leading-underscore" ]
+  }
+}

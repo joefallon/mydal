@@ -1,0 +1,11 @@
+{
+  "defaultEnv": "test",
+  "test": {
+    "driver": "mysql",
+    "host": "localhost",
+    "multipleStatements": true,
+    "database": "mydal_test",
+    "user": "mydal_test",
+    "password": "mydal_test"
+  }
+}
