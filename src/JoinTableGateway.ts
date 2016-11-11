@@ -31,7 +31,7 @@ class JoinTableGateway {
         let created      = JoinTableGateway.mySqlDatetimeString(new Date());
         let columnNames  = `\`${id1Name}\`, \`${id2Name}\``;
         let placeholders = '?, ?';
-        let values = [id1, id2];
+        let values       = [id1, id2];
 
         if(createdName.length > 0) {
             columnNames  += `, \`${createdName}\``;

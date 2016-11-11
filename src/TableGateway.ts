@@ -24,7 +24,7 @@ class TableGateway {
         this.updatedColumnName = value;
     }
 
-    public createRow(obj:any, callback:(err:IError, insertId:number) => void) {
+    public createRow(obj:any, callback:(err:IError, insertId:number)=>void) {
         let tableName  = this.tableName;
         let primaryKey = this.primaryKey;
         delete obj[primaryKey];
@@ -62,7 +62,7 @@ class TableGateway {
         }
     }
 
-    public retrieveRow(id:number, callback:(err:IError, row:Object) => void) {
+    public retrieveRow(id:number, callback:(err:IError, row:Object)=>void) {
         let tableName  = this.tableName;
         let primaryKey = this.primaryKey;
 
@@ -91,7 +91,7 @@ class TableGateway {
         }
     }
 
-    public updateRow(row:any, callback:(err:IError, affectedRows:number) => void) {
+    public updateRow(row:any, callback:(err:IError, affectedRows:number)=>void) {
         let tableName       = this.tableName;
         let primaryKeyName  = this.primaryKey;
         let primaryKeyValue = row[primaryKeyName];
@@ -129,7 +129,7 @@ class TableGateway {
         }
     }
 
-    public deleteRow(id:number, callback:(err:IError, affectedRows:number) => void) {
+    public deleteRow(id:number, callback:(err:IError, affectedRows:number)=>void) {
         let tableName  = this.tableName;
         let primaryKey = this.primaryKey;
         let sql = 'DELETE FROM `' + tableName + '` WHERE `' + primaryKey + '`=' + id;
@@ -158,7 +158,7 @@ class TableGateway {
     }
 
     public retrieveRowsBy(fieldName:string, fieldValue:any,
-                          callback:(err:IError, rows:any[]) => void) {
+                          callback:(err:IError, rows:any[])=>void) {
         let tableName = this.tableName;
         let sql = 'SELECT * FROM `' + tableName + '` WHERE ??=?';
         let values = [fieldName, fieldValue];
@@ -187,7 +187,7 @@ class TableGateway {
         }
     }
 
-    public retrieveRowsByIds(ids:number[], callback:(err:IError, rows:any[]) => void) {
+    public retrieveRowsByIds(ids:number[], callback:(err:IError, rows:any[])=>void) {
         let table = this.tableName;
         let primaryKey = this.primaryKey;
 
@@ -223,7 +223,7 @@ class TableGateway {
         }
     }
 
-    public retrieveRowsByIsNull(fieldName:string, callback:(err:IError, rows:any[]) => void) {
+    public retrieveRowsByIsNull(fieldName:string, callback:(err:IError, rows:any[])=>void) {
         let table = this.tableName;
         let sql = 'SELECT * FROM `' + table + '` WHERE `' + fieldName + '` IS NULL';
 
@@ -251,7 +251,7 @@ class TableGateway {
     }
 
     public retrieveRowsByNotEqual(fieldName:string, fieldValue:any,
-                                  callback:(err:IError, rows:any[]) => void) {
+                                  callback:(err:IError, rows:any[])=>void) {
         let table = this.tableName;
         let sql = 'SELECT * FROM `' + table +'` WHERE ?? <> ?';
         let values = [fieldName, fieldValue];

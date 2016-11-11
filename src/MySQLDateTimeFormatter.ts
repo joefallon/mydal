@@ -1,4 +1,3 @@
-
 class MySQLDateTimeFormatter {
     public static format(date:Date):string {
         function pad(n) { return (n < 10) ? '0' + n : n; }

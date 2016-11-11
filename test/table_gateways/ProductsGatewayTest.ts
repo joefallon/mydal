@@ -33,10 +33,10 @@ describe('ProductsGateway', () => {
                 if(err) {
                     assert.fail(null, null, err.message);
                 } else {
-                    assert.equal(product.getDescription(),  'test desc');
-                    assert.equal(product.getId(),           id);
-                    assert.equal(product.getName(),         'test name');
-                    assert.equal(product.getPrice(),        1.11);
+                    assert.equal(product.getDescription(), 'test desc');
+                    assert.equal(product.getId(),    id);
+                    assert.equal(product.getName(),  'test name');
+                    assert.equal(product.getPrice(), 1.11);
 
                     assert.isAbove(product.getId(), 0);
                     assert.isAbove(product.getCreated().length, 0);

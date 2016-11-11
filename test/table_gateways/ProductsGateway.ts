@@ -13,12 +13,12 @@ class ProductsGateway {
         this.tableGateway.setUpdatedColumnName('updated');
     }
 
-    public createRow(product:Product, callback:(err:IError, insertId:number) => void) {
+    public createRow(product:Product, callback:(err:IError, insertId:number)=>void) {
         let row = ProductsGateway.mapProductToRow(product);
         this.tableGateway.createRow(row, callback);
     }
 
-    public retrieveRow(id:number, callback:(err:IError, product:Product) => void) {
+    public retrieveRow(id:number, callback:(err:IError, product:Product)=>void) {
         this.tableGateway.retrieveRow(id, retrieveRowCallback);
 
         function retrieveRowCallback(err:IError, row:Object[]) {
@@ -35,7 +35,7 @@ class ProductsGateway {
         }
     }
 
-    public updateRow(product:Product, callback:(err:IError, affectedRows:number) => void) {
+    public updateRow(product:Product, callback:(err:IError, affectedRows:number)=>void) {
         let row = ProductsGateway.mapProductToRow(product);
         this.tableGateway.updateRow(row, updateRowCallback);
 
