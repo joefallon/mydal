@@ -86,7 +86,12 @@ class TableGateway {
                 callback(err, null);
             } else {
                 connection.release();
-                callback(null, row);
+
+                if(row.length == 0) {
+                    callback(null, null);
+                } else {
+                    callback(null, row[0]);
+                }
             }
         }
     }

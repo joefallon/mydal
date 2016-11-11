@@ -18,12 +18,12 @@ var ProductsGateway = (function () {
             if (err) {
                 callback(err, null);
             }
-            else {
-                if (row.length === 0) {
-                    callback(null, null);
-                }
-                var product = ProductsGateway.mapRowToProduct(row[0]);
+            else if (row) {
+                var product = ProductsGateway.mapRowToProduct(row);
                 callback(null, product);
+            }
+            else {
+                callback(null, null);
             }
         }
     };

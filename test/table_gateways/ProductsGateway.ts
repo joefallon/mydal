@@ -24,13 +24,11 @@ class ProductsGateway {
         function retrieveRowCallback(err:IError, row:Object[]) {
             if(err) {
                 callback(err, null);
-            } else {
-                if(row.length === 0) {
-                    callback(null, null);
-                }
-
-                let product = ProductsGateway.mapRowToProduct(row[0]);
+            } else if(row) {
+                let product = ProductsGateway.mapRowToProduct(row);
                 callback(null, product);
+            } else {
+                callback(null, null);
             }
         }
     }
