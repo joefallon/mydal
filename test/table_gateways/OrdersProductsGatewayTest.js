@@ -16,7 +16,7 @@ describe('OrdersProductsGateway', function () {
                     done();
                 }
                 else {
-                    assert.equal(isSuccess, 1, 'row count');
+                    assert.equal(isSuccess, true, 'row count');
                     ordersProductsGateway.retrieveRow(id1, id2, retrieveRowCallback);
                 }
             }
@@ -48,7 +48,7 @@ describe('OrdersProductsGateway', function () {
                     done();
                 }
                 else {
-                    assert.equal(isSuccess, 1, 'row count');
+                    assert.equal(isSuccess, true, 'row count');
                     ordersProductsGateway.deleteRow(id1, id2, deleteRowCallback);
                 }
             }
