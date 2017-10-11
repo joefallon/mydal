@@ -1,48 +1,50 @@
 import mysql = require('mysql');
-import MySQLDateTimeFormatter = require('./MySQLDateTimeFormatter');
+import { IPool, IConnection } from 'mysql';
+import { MySQLDateTimeFormatter } from './MySQLDateTimeFormatter';
 
-import {IConnection, IError, IPool } from 'mysql';
 
-class TableGateway {
-    private pool:IPool;
-    private tableName:string;
-    private primaryKey:string;
-    private createdColumnName = '';
-    private updatedColumnName = '';
+export class TableGateway {
+    private _pool: IPool;
+    private _tableName: string;
+    private _primaryKey: string;
+    private _createdColumnName = '';
+    private _updatedColumnName = '';
 
-    constructor(connectionPool:IPool, tableName:string, primaryKey = 'id') {
-        this.pool       = connectionPool;
-        this.tableName  = tableName;
-        this.primaryKey = primaryKey;
+    constructor(connectionPool: IPool, tableName: string, primaryKey = 'id') {
+        this._pool = connectionPool;
+        this._tableName = tableName;
+        this._primaryKey = primaryKey;
     }
 
-    public setCreatedColumnName(value:string) {
-        this.createdColumnName = value;
+    public setCreatedColumnName(value: string) {
+        this._createdColumnName = value;
     }
 
-    public setUpdatedColumnName(value:string) {
-        this.updatedColumnName = value;
+    public setUpdatedColumnName(value: string) {
+        this._updatedColumnName = value;
     }
 
-    public createRow(obj:any, callback:(err:IError, insertId:number)=>void) {
-        let tableName  = this.tableName;
-        let primaryKey = this.primaryKey;
+    public createRow(obj: any, callback: (err: Error, insertId: number) => void) {
+        let tableName = this._tableName;
+        let primaryKey = this._primaryKey;
         delete obj[primaryKey];
 
+        // noinspection AssignmentToFunctionParameterJS
         obj = this.timestampCreatedColumn(obj);
+        // noinspection AssignmentToFunctionParameterJS
         obj = this.timestampUpdatedColumn(obj);
 
-        let columnNames  = TableGateway.getColumnNames(obj);
+        let columnNames = TableGateway.getColumnNames(obj);
         let placeholders = TableGateway.getPlaceholders(obj);
 
         let sql = `INSERT INTO ${tableName} ( ${columnNames} ) VALUES ( ${placeholders} )`;
         let values = TableGateway.getObjectValues(obj);
         sql = mysql.format(sql, values);
 
-        let connection:IConnection = null;
-        this.pool.getConnection(performQuery);
+        let connection: IConnection = null;
+        this._pool.getConnection(performQuery);
 
-        function performQuery(err:IError, conn:IConnection) {
+        function performQuery(err: Error, conn: IConnection) {
             if(err) {
                 callback(err, null);
             } else {
@@ -51,7 +53,7 @@ class TableGateway {
             }
         }
 
-        function releaseConnection(err:IError, result:any[]) {
+        function releaseConnection(err: Error, result: any[]) {
             if(err) {
                 connection.release();
                 callback(err, null);
@@ -62,16 +64,16 @@ class TableGateway {
         }
     }
 
-    public retrieveRow(id:number, callback:(err:IError, row:Object)=>void) {
-        let tableName  = this.tableName;
-        let primaryKey = this.primaryKey;
+    public retrieveRow(id: number, callback: (err: Error, row: Object) => void) {
+        let tableName = this._tableName;
+        let primaryKey = this._primaryKey;
 
         let sql = 'SELECT * FROM ' + tableName + ' WHERE `' + primaryKey + '`=' + id + ' LIMIT 1';
 
-        let connection:IConnection = null;
-        this.pool.getConnection(performQuery);
+        let connection: IConnection = null;
+        this._pool.getConnection(performQuery);
 
-        function performQuery(err:IError, conn:IConnection) {
+        function performQuery(err: Error, conn: IConnection) {
             if(err) {
                 callback(err, null);
             } else {
@@ -80,7 +82,7 @@ class TableGateway {
             }
         }
 
-        function releaseConnection(err:IError, row:any[]) {
+        function releaseConnection(err: Error, row: any[]) {
             if(err) {
                 connection.release();
                 callback(err, null);
@@ -96,25 +98,26 @@ class TableGateway {
         }
     }
 
-    public updateRow(row:any, callback:(err:IError, affectedRows:number)=>void) {
-        let tableName       = this.tableName;
-        let primaryKeyName  = this.primaryKey;
+    public updateRow(row: any, callback: (err: Error, affectedRows: number) => void) {
+        let tableName = this._tableName;
+        let primaryKeyName = this._primaryKey;
         let primaryKeyValue = row[primaryKeyName];
 
         delete row[primaryKeyName];
+        // noinspection AssignmentToFunctionParameterJS
         row = this.timestampUpdatedColumn(row);
         let params = TableGateway.getParameterizedValues(row);
 
         let sql = 'UPDATE ' + tableName
-                + ' SET ' + params
-                + ' WHERE `' + primaryKeyName + '`=' + primaryKeyValue;
+            + ' SET ' + params
+            + ' WHERE `' + primaryKeyName + '`=' + primaryKeyValue;
         let values = TableGateway.getObjectValues(row);
         sql = mysql.format(sql, values);
 
-        let connection:IConnection = null;
-        this.pool.getConnection(performQuery);
+        let connection: IConnection = null;
+        this._pool.getConnection(performQuery);
 
-        function performQuery(err:IError, conn:IConnection) {
+        function performQuery(err: Error, conn: IConnection) {
             if(err) {
                 callback(err, null);
             } else {
@@ -123,7 +126,7 @@ class TableGateway {
             }
         }
 
-        function releaseConnection(err:IError, result:any[]) {
+        function releaseConnection(err: Error, result: any[]) {
             if(err) {
                 connection.release();
                 callback(err, null);
@@ -134,15 +137,15 @@ class TableGateway {
         }
     }
 
-    public deleteRow(id:number, callback:(err:IError, affectedRows:number)=>void) {
-        let tableName  = this.tableName;
-        let primaryKey = this.primaryKey;
+    public deleteRow(id: number, callback: (err: Error, affectedRows: number) => void) {
+        let tableName = this._tableName;
+        let primaryKey = this._primaryKey;
         let sql = 'DELETE FROM `' + tableName + '` WHERE `' + primaryKey + '`=' + id;
 
-        let connection:IConnection = null;
-        this.pool.getConnection(performQuery);
+        let connection: IConnection = null;
+        this._pool.getConnection(performQuery);
 
-        function performQuery(err:IError, conn:IConnection) {
+        function performQuery(err: Error, conn: IConnection) {
             if(err) {
                 callback(err, null);
             } else {
@@ -151,7 +154,7 @@ class TableGateway {
             }
         }
 
-        function releaseConnection(err: IError, result:any[]) {
+        function releaseConnection(err: Error, result: any[]) {
             if(err) {
                 connection.release();
                 callback(err, null);
@@ -162,17 +165,17 @@ class TableGateway {
         }
     }
 
-    public retrieveRowsBy(fieldName:string, fieldValue:any,
-                          callback:(err:IError, rows:any[])=>void) {
-        let tableName = this.tableName;
+    public retrieveRowsBy(fieldName: string, fieldValue: any,
+                          callback: (err: Error, rows: any[]) => void) {
+        let tableName = this._tableName;
         let sql = 'SELECT * FROM `' + tableName + '` WHERE ??=?';
         let values = [fieldName, fieldValue];
         sql = mysql.format(sql, values);
 
-        let connection:IConnection = null;
-        this.pool.getConnection(performQuery);
+        let connection: IConnection = null;
+        this._pool.getConnection(performQuery);
 
-        function performQuery(err:IError, conn:IConnection) {
+        function performQuery(err: Error, conn: IConnection) {
             if(err) {
                 callback(err, null);
             } else {
@@ -181,7 +184,7 @@ class TableGateway {
             }
         }
 
-        function releaseConnection(err:IError, rows:any[]) {
+        function releaseConnection(err: Error, rows: any[]) {
             if(err) {
                 connection.release();
                 callback(err, null);
@@ -192,9 +195,9 @@ class TableGateway {
         }
     }
 
-    public retrieveRowsByIds(ids:number[], callback:(err:IError, rows:any[])=>void) {
-        let table = this.tableName;
-        let primaryKey = this.primaryKey;
+    public retrieveRowsByIds(ids: number[], callback: (err: Error, rows: any[]) => void) {
+        let table = this._tableName;
+        let primaryKey = this._primaryKey;
 
         for(let i = 0; i < ids.length; i++) {
             // Ensure the ids are all integers.
@@ -202,13 +205,13 @@ class TableGateway {
         }
 
         let idsString = ids.join(', ');
-        let sql = 'SELECT * FROM `' + table +'` WHERE `'
-                + primaryKey + '` IN (' + idsString + ') ORDER BY `' + primaryKey + '`';
+        let sql = 'SELECT * FROM `' + table + '` WHERE `'
+            + primaryKey + '` IN (' + idsString + ') ORDER BY `' + primaryKey + '`';
 
-        let connection:IConnection = null;
-        this.pool.getConnection(performQuery);
+        let connection: IConnection = null;
+        this._pool.getConnection(performQuery);
 
-        function performQuery(err:IError, conn:IConnection) {
+        function performQuery(err: Error, conn: IConnection) {
             if(err) {
                 callback(err, null);
             } else {
@@ -217,7 +220,7 @@ class TableGateway {
             }
         }
 
-        function releaseConnection(err:IError, rows:any[]) {
+        function releaseConnection(err: Error, rows: any[]) {
             if(err) {
                 connection.release();
                 callback(err, null);
@@ -228,14 +231,15 @@ class TableGateway {
         }
     }
 
-    public retrieveRowsByIsNull(fieldName:string, callback:(err:IError, rows:any[])=>void) {
-        let table = this.tableName;
-        let sql = 'SELECT * FROM `' + table + '` WHERE `' + fieldName + '` IS NULL';
+    public retrieveRowsByIsNull(fieldName: string, callback: (err: Error, rows: any[]) => void) {
+        let table = this._tableName;
+        let sql = 'SELECT * FROM `' + table + '` WHERE `' + fieldName + '` IS NULL ORDER BY '
+            + this._primaryKey;
 
-        let connection:IConnection = null;
-        this.pool.getConnection(performQuery);
+        let connection: IConnection = null;
+        this._pool.getConnection(performQuery);
 
-        function performQuery(err:IError, conn:IConnection) {
+        function performQuery(err: Error, conn: IConnection) {
             if(err) {
                 callback(err, null);
             } else {
@@ -244,7 +248,7 @@ class TableGateway {
             }
         }
 
-        function releaseConnection(err:IError, rows:any[]) {
+        function releaseConnection(err: Error, rows: any[]) {
             if(err) {
                 connection.release();
                 callback(err, null);
@@ -255,17 +259,17 @@ class TableGateway {
         }
     }
 
-    public retrieveRowsByNotEqual(fieldName:string, fieldValue:any,
-                                  callback:(err:IError, rows:any[])=>void) {
-        let table = this.tableName;
-        let sql = 'SELECT * FROM `' + table +'` WHERE ?? <> ?';
+    public retrieveRowsByNotEqual(fieldName: string, fieldValue: any,
+                                  callback: (err: Error, rows: any[]) => void) {
+        let table = this._tableName;
+        let sql = 'SELECT * FROM `' + table + '` WHERE ?? <> ?';
         let values = [fieldName, fieldValue];
         sql = mysql.format(sql, values);
 
-        let connection:IConnection = null;
-        this.pool.getConnection(performQuery);
+        let connection: IConnection = null;
+        this._pool.getConnection(performQuery);
 
-        function performQuery(err:IError, conn:IConnection) {
+        function performQuery(err: Error, conn: IConnection) {
             if(err) {
                 callback(err, null);
             } else {
@@ -274,7 +278,7 @@ class TableGateway {
             }
         }
 
-        function releaseConnection(err:IError, rows:any[]) {
+        function releaseConnection(err: Error, rows: any[]) {
             if(err) {
                 connection.release();
                 callback(err, null);
@@ -285,17 +289,17 @@ class TableGateway {
         }
     }
 
-    public setFieldNullWhere(fieldName:string, fieldValue:any,
-                             callback:(err:IError, affectedRows:number) => void) {
-        let table = this.tableName;
-        let sql = 'UPDATE `' + table +'` SET ?? = NULL WHERE ?? = ?';
+    public setFieldNullWhere(fieldName: string, fieldValue: any,
+                             callback: (err: Error, affectedRows: number) => void) {
+        let table = this._tableName;
+        let sql = 'UPDATE `' + table + '` SET ?? = NULL WHERE ?? = ?';
         let values = [fieldName, fieldName, fieldValue];
         sql = mysql.format(sql, values);
 
-        let connection:IConnection = null;
-        this.pool.getConnection(performQuery);
+        let connection: IConnection = null;
+        this._pool.getConnection(performQuery);
 
-        function performQuery(err:IError, conn:IConnection) {
+        function performQuery(err: Error, conn: IConnection) {
             if(err) {
                 callback(err, null);
             } else {
@@ -304,7 +308,7 @@ class TableGateway {
             }
         }
 
-        function releaseConnection(err: IError, result:any[]) {
+        function releaseConnection(err: Error, result: any[]) {
             if(err) {
                 connection.release();
                 callback(err, null);
@@ -315,17 +319,17 @@ class TableGateway {
         }
     }
 
-    public deleteRowsBy(fieldName:string, fieldValue:any,
-                        callback:(err:IError, affectedRows:number) => void) {
-        let table = this.tableName;
+    public deleteRowsBy(fieldName: string, fieldValue: any,
+                        callback: (err: Error, affectedRows: number) => void) {
+        let table = this._tableName;
         let sql = 'DELETE FROM `' + table + '` WHERE ?? = ?';
         let values = [fieldName, fieldValue];
         sql = mysql.format(sql, values);
 
-        let connection:IConnection = null;
-        this.pool.getConnection(getConnectionCallback);
+        let connection: IConnection = null;
+        this._pool.getConnection(getConnectionCallback);
 
-        function getConnectionCallback(err:IError, conn:IConnection) {
+        function getConnectionCallback(err: Error, conn: IConnection) {
             if(err) {
                 callback(err, null);
             } else {
@@ -334,7 +338,7 @@ class TableGateway {
             }
         }
 
-        function queryCallback(err: IError, result:any[]) {
+        function queryCallback(err: Error, result: any[]) {
             if(err) {
                 connection.release();
                 callback(err, null);
@@ -345,17 +349,17 @@ class TableGateway {
         }
     }
 
-    public countRowsByValue(fieldName:string, fieldValue:any,
-                            callback:(err:IError, count:number) => void) {
-        let table = this.tableName;
+    public countRowsByValue(fieldName: string, fieldValue: any,
+                            callback: (err: Error, count: number) => void) {
+        let table = this._tableName;
         let sql = 'SELECT COUNT(*) FROM `' + table + '` WHERE ?? = ?';
         let values = [fieldName, fieldValue];
         sql = mysql.format(sql, values);
 
-        this.pool.getConnection(getConnectionCallback);
-        let connection:IConnection = null;
+        this._pool.getConnection(getConnectionCallback);
+        let connection: IConnection = null;
 
-        function getConnectionCallback(err:IError, conn:IConnection) {
+        function getConnectionCallback(err: Error, conn: IConnection) {
             if(err) {
                 callback(err, null);
             } else {
@@ -364,7 +368,7 @@ class TableGateway {
             }
         }
 
-        function queryCallback(err: IError, result:any[]) {
+        function queryCallback(err: Error, result: any[]) {
             if(err) {
                 connection.release();
                 callback(err, null);
@@ -375,27 +379,27 @@ class TableGateway {
         }
     }
 
-    private timestampCreatedColumn(obj:Object):Object {
-        if(this.createdColumnName.length > 0) {
+    private timestampCreatedColumn(obj: Object): Object {
+        if(this._createdColumnName.length > 0) {
             let date = new Date();
-            obj[this.createdColumnName] = TableGateway.mySqlDatetimeString(date);
+            obj[this._createdColumnName] = TableGateway.mySqlDatetimeString(date);
         }
 
         return obj;
     }
 
-    private timestampUpdatedColumn(obj:Object):Object {
-        if(this.updatedColumnName.length > 0) {
+    private timestampUpdatedColumn(obj: Object): Object {
+        if(this._updatedColumnName.length > 0) {
             let date = new Date();
-            obj[this.updatedColumnName] = TableGateway.mySqlDatetimeString(date);
+            obj[this._updatedColumnName] = TableGateway.mySqlDatetimeString(date);
         }
 
         return obj;
     }
 
-    private static getPlaceholders(obj:any) {
+    private static getPlaceholders(obj: any) {
         let keys = Object.keys(obj);
-        let placeholders:string[] = [];
+        let placeholders: string[] = [];
 
         for(let i = 0; i < keys.length; i++) {
             placeholders.push('?');
@@ -406,9 +410,9 @@ class TableGateway {
         return placeholdersString;
     }
 
-    private static getColumnNames(obj:any):string {
+    private static getColumnNames(obj: any): string {
         let keys = Object.keys(obj);
-        let columnNames:string[] = [];
+        let columnNames: string[] = [];
 
         for(let i = 0; i < keys.length; i++) {
             columnNames.push('`' + keys[i] + '`');
@@ -419,11 +423,11 @@ class TableGateway {
         return colNamesString;
     }
 
-    private static mySqlDatetimeString(date:Date):string {
+    private static mySqlDatetimeString(date: Date): string {
         return MySQLDateTimeFormatter.format(date);
     }
 
-    private static getParameterizedValues(obj:any) {
+    private static getParameterizedValues(obj: any) {
         let keys = Object.keys(obj);
         let parameters = [];
 
@@ -436,7 +440,7 @@ class TableGateway {
         return paramsString;
     }
 
-    private static getObjectValues(obj:Object):Array<any> {
+    private static getObjectValues(obj: Object): Array<any> {
         let keys = Object.keys(obj);
         let results = [];
 
@@ -448,5 +452,3 @@ class TableGateway {
         return results;
     }
 }
-
-export = TableGateway;

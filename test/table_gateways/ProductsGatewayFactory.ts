@@ -1,7 +1,7 @@
-import ConnectionPoolTestFactory = require('../config/ConnectionPoolTestFactory');
-import ProductsGateway           = require('./ProductsGateway');
+import {ConnectionPoolTestFactory} from '../config/ConnectionPoolTestFactory';
+import {ProductsGateway} from './ProductsGateway';
 
-class ProductsGatewayFactory {
+export class ProductsGatewayFactory {
 
     public static create() {
         let pool = ConnectionPoolTestFactory.create();
@@ -10,5 +10,3 @@ class ProductsGatewayFactory {
         return gateway;
     }
 }
-
-export = ProductsGatewayFactory;

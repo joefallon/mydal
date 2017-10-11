@@ -1,5 +1,4 @@
-import ProductsGateway = require('./ProductsGateway');
-declare class ProductsGatewayFactory {
+import { ProductsGateway } from './ProductsGateway';
+export declare class ProductsGatewayFactory {
     static create(): ProductsGateway;
 }
-export = ProductsGatewayFactory;

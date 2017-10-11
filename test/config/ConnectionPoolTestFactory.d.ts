@@ -1,6 +1,5 @@
 import mysql = require('mysql');
-declare class ConnectionPoolTestFactory {
+export declare class ConnectionPoolTestFactory {
     private static pool;
     static create(): mysql.IPool;
 }
-export = ConnectionPoolTestFactory;

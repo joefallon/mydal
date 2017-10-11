@@ -1,13 +1,12 @@
 {
   "name": "mydal",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "description": "A simple data access layer and table gateway implementation for MySQL.",
   "main": "index.js",
+  "types": "index.d.ts",
   "scripts": {
-    "compile": "tsc",
-    "compile-watch": "tsc -w",
-    "debug": "./node_modules/mocha/bin/mocha -u tdd --recursive --debug-brk",
-    "test": "./node_modules/mocha/bin/mocha -u tdd --recursive -s 0"
+    "debug": "./node_modules/mocha/bin/mocha --recursive --debug-brk",
+    "test": "./node_modules/mocha/bin/mocha --recursive -s 0"
   },
   "repository": {
     "type": "git",
@@ -27,16 +26,14 @@
   },
   "homepage": "https://github.com/joefallon/mydal#readme",
   "devDependencies": {
-    "@types/chai": "^3.4.34",
-    "@types/mocha": "^2.2.32",
-    "chai": "^3.5.0",
-    "mocha": "^3.0.2"
+    "@types/mocha": "^2.2.43",
+    "assert": "^1.4.1",
+    "mocha": "^4.0.1"
   },
   "dependencies": {
-    "@types/mysql": "0.0.30",
-    "db-migrate": "^0.10.0-beta.16",
-    "db-migrate-mysql": "^1.1.7",
-    "mysql": "^2.11.1"
-  },
-  "types": "./src"
+    "@types/mysql": "0.0.34",
+    "db-migrate": "^0.10.0-beta.24",
+    "db-migrate-mysql": "^1.1.10",
+    "mysql": "^2.15.0"
+  }
 }

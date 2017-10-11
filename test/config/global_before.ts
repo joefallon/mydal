@@ -1,7 +1,5 @@
-import DatabaseUtilities = require('./DatabaseUtilities');
-
-import chai = require('chai');
-let assert  = chai.assert;
+import assert = require('assert');
+import { DatabaseUtilities } from "./DatabaseUtilities";
 
 before((done) => {
     DatabaseUtilities.clean(cleanCallback);

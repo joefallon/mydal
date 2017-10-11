@@ -1,18 +1,15 @@
-import ConnectionPoolTestFactory = require('./ConnectionPoolTestFactory');
+import assert = require('assert');
+import { ConnectionPoolTestFactory } from './ConnectionPoolTestFactory';
+import { IConnection } from 'mysql';
 
-import {IConnection} from 'mysql';
-import {IError} from 'mysql';
-
-import chai = require('chai');
-let assert = chai.assert;
-
-class DatabaseUtilities {
-    public static clean(callback:(err:IError)=>void) {
+export class DatabaseUtilities {
+    
+    public static clean(callback:(err:Error)=>void) {
         let pool = ConnectionPoolTestFactory.create();
         let connection:IConnection = null;
         pool.getConnection(disableForeignKeyChecks);
 
-        function disableForeignKeyChecks(err:IError, conn:IConnection) {
+        function disableForeignKeyChecks(err:Error, conn:IConnection) {
             if(err) {
                 callback(err);
             } else {
@@ -22,7 +19,7 @@ class DatabaseUtilities {
             }
         }
 
-        function truncateProductsTable(err:IError, result:any[]) {
+        function truncateProductsTable(err:Error, result:any[]) {
             if(err) {
                 connection.release();
                 callback(err);
@@ -32,7 +29,7 @@ class DatabaseUtilities {
             }
         }
 
-        function truncateOrdersProductsTable(err:IError, result:any[]) {
+        function truncateOrdersProductsTable(err:Error, result:any[]) {
             if(err) {
                 connection.release();
                 callback(err);
@@ -42,7 +39,7 @@ class DatabaseUtilities {
             }
         }
 
-        function enableForeignKeyChecks(err:IError, result:any[]) {
+        function enableForeignKeyChecks(err:Error, result:any[]) {
             if(err) {
                 connection.release();
                 callback(err);
@@ -52,7 +49,7 @@ class DatabaseUtilities {
             }
         }
 
-        function releaseConnection(err:IError, result:any[]) {
+        function releaseConnection(err:Error, result:any[]) {
             if(err) {
                 assert.fail(null, null, err.message);
             }
@@ -61,6 +58,9 @@ class DatabaseUtilities {
             callback(err);
         }
     }
-}
 
-export = DatabaseUtilities;
+    public static shutdownPool() {
+        const pool = ConnectionPoolTestFactory.create();
+        pool.end();
+    }
+}

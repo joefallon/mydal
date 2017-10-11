@@ -1,11 +1,10 @@
 import mysql = require('mysql');
+import { IPool, IPoolConfig } from 'mysql';
 
-import {IPool, IPoolConfig} from 'mysql';
+export class ConnectionPoolFactory {
+    private static pool: IPool;
 
-class ConnectionPoolFactory {
-    private static pool:IPool;
-
-    public static create(poolConfig:IPoolConfig):IPool {
+    public static create(poolConfig: IPoolConfig): IPool {
         if(ConnectionPoolFactory.pool == null) {
             ConnectionPoolFactory.pool = mysql.createPool(poolConfig);
         }
@@ -13,5 +12,3 @@ class ConnectionPoolFactory {
         return ConnectionPoolFactory.pool;
     }
 }
-
-export = ConnectionPoolFactory;

@@ -1,59 +1,65 @@
+export class Product {
+    private _id: number;
+    private _name: string;
+    private _description: string|null;
+    private _price: number;
+    private _created: string;
+    private _updated: string;
 
-class Product {
-    private id:number          = 0;
-    private name:string        = '';
-    private description:string = null;
-    private price:number       = 0;
-    private created:string     = '';
-    private updated:string     = '';
-
-    public getId():number {
-        return this.id;
+    public constructor() {
+        this._id          = 0;
+        this._name        = '';
+        this._description = null;
+        this._price       = 0;
+        this._created     = '';
+        this._updated     = '';
     }
 
-    public setId(value:number) {
-        this.id = value;
+    public getId(): number {
+        return this._id;
     }
 
-    public getName():string {
-        return this.name;
+    public setId(value: number) {
+        this._id = value;
     }
 
-    public setName(value:string) {
-        this.name = value;
+    public getName(): string {
+        return this._name;
     }
 
-    public getDescription():string {
-        return this.description;
+    public setName(value: string) {
+        this._name = value;
     }
 
-    public setDescription(value:string) {
-        this.description = value;
+    public getDescription(): string|null {
+        return this._description;
     }
 
-    public getPrice():number {
-        return this.price;
+    public setDescription(value: string) {
+        this._description = value;
     }
 
-    public setPrice(value:number) {
-        this.price = value;
+    public getPrice(): number {
+        return this._price;
     }
 
-    public getCreated():string {
-        return this.created;
+    public setPrice(value: number) {
+        this._price = value;
     }
 
-    public setCreated(value:string) {
-        this.created = value;
+    public getCreated(): string {
+        return this._created;
     }
 
-    public getUpdated():string {
-        return this.updated;
+    public setCreated(value: string) {
+        this._created = value;
     }
 
-    public setUpdated(value:string) {
-        this.updated = value;
+    public getUpdated(): string {
+        return this._updated;
+    }
+
+    public setUpdated(value: string) {
+        this._updated = value;
     }
 }
-
-export = Product;

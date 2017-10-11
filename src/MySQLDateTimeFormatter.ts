@@ -1,6 +1,6 @@
-class MySQLDateTimeFormatter {
-    public static format(date:Date):string {
-        function pad(n) { return (n < 10) ? '0' + n : n; }
+export class MySQLDateTimeFormatter {
+    public static format(date: Date): string {
+        function pad(n) { if(n < 10) {return '0' + n;} else {return n;} }
 
         let year    = date.getUTCFullYear();
         let month   = pad(date.getUTCMonth() + 1); // #getUTCMonth is zero indexed
@@ -12,5 +12,3 @@ class MySQLDateTimeFormatter {
         return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
     }
 }
-
-export = MySQLDateTimeFormatter;

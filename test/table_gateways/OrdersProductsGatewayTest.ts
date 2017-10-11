@@ -1,14 +1,11 @@
-require('../config/global_before');
-import OrdersProductsGatewayFactory = require('./OrdersProductsGatewayFactory');
-import DatabaseUtilities = require('../config/DatabaseUtilities');
+import assert = require('assert');
+import {OrdersProductsGatewayFactory} from "./OrdersProductsGatewayFactory";
 
-import {IError} from 'mysql';
-
-import chai = require('chai');
-let assert  = chai.assert;
 
 describe('OrdersProductsGateway', () => {
+
     describe('#createRow and #retrieveRow', () => {
+
         it('creates and retrieves a row from the database', (done) => {
             let id1 = 1;
             let id2 = 2;
@@ -16,7 +13,7 @@ describe('OrdersProductsGateway', () => {
             let ordersProductsGateway = OrdersProductsGatewayFactory.create();
             ordersProductsGateway.createRow(id1, id2, createRowCallback);
 
-            function createRowCallback(err:IError, isSuccess:boolean) {
+            function createRowCallback(err: Error, isSuccess: boolean) {
                 if(err) {
                     assert.fail(null, null, err.message);
                     done();
@@ -26,7 +23,7 @@ describe('OrdersProductsGateway', () => {
                 }
             }
 
-            function retrieveRowCallback(err:IError, row:any[]) {
+            function retrieveRowCallback(err: Error, row: any[]) {
                 if(err) {
                     assert.fail(null, null, err.message);
                     done();
@@ -34,7 +31,7 @@ describe('OrdersProductsGateway', () => {
                     assert.equal(row['table1_id'], 1);
                     assert.equal(row['table2_id'], 2);
 
-                    let created:string = row['created'];
+                    let created: string = row['created'];
                     assert.equal(created.length, 19);
                     assert.notEqual(created, '0000-00-00 00:00:00');
                     done();
@@ -44,6 +41,7 @@ describe('OrdersProductsGateway', () => {
     });
 
     describe('#deleteRow', () => {
+
         it('deletes a row from the database', (done) => {
             let id1 = 3;
             let id2 = 4;
@@ -51,7 +49,7 @@ describe('OrdersProductsGateway', () => {
             let ordersProductsGateway = OrdersProductsGatewayFactory.create();
             ordersProductsGateway.createRow(id1, id2, createRowCallback);
 
-            function createRowCallback(err:IError, isSuccess:boolean) {
+            function createRowCallback(err: Error, isSuccess: boolean) {
                 if(err) {
                     assert.fail(null, null, err.message);
                     done();
@@ -61,7 +59,7 @@ describe('OrdersProductsGateway', () => {
                 }
             }
 
-            function deleteRowCallback(err:IError, affectedRows:number) {
+            function deleteRowCallback(err: Error, affectedRows: number) {
                 if(err) {
                     assert.fail(null, null, err.message);
                     done();
@@ -71,12 +69,12 @@ describe('OrdersProductsGateway', () => {
                 }
             }
 
-            function retrieveRowCallback(err:IError, row:any[]) {
+            function retrieveRowCallback(err: Error, row: any[]) {
                 if(err) {
                     assert.fail(null, null, err.message);
                     done();
                 } else {
-                    assert.isNull(row);
+                    assert.equal(row, null, 'The row was expected to be null.');
                     done();
                 }
             }
@@ -84,8 +82,9 @@ describe('OrdersProductsGateway', () => {
     });
 
     describe('#retrieveById', () => {
+
         it('retrieves all rows given the table1_id', (done) => {
-            let id1  = 5;
+            let id1 = 5;
             let id2a = 6;
             let id2b = 7;
 
@@ -96,7 +95,7 @@ describe('OrdersProductsGateway', () => {
             ordersProductsGateway.createRow(id1, id2a, createRow2aComplete);
             ordersProductsGateway.createRow(id1, id2b, createRow2bComplete);
 
-            function createRow2aComplete(err:IError, isSuccess:boolean) {
+            function createRow2aComplete(err: Error, isSuccess: boolean) {
                 if(err) {
                     assert.fail(null, null, err.message);
                     done();
@@ -111,7 +110,7 @@ describe('OrdersProductsGateway', () => {
                 }
             }
 
-            function createRow2bComplete(err:IError, isSuccess:boolean) {
+            function createRow2bComplete(err: Error, isSuccess: boolean) {
                 if(err) {
                     assert.fail(null, null, err.message);
                     done();
@@ -132,7 +131,7 @@ describe('OrdersProductsGateway', () => {
                 }
             }
 
-            function retrieveRowsCallback(err:IError, rows:any[]) {
+            function retrieveRowsCallback(err: Error, rows: any[]) {
                 if(err) {
                     assert.fail(null, null, err.message);
                     done();
@@ -149,8 +148,9 @@ describe('OrdersProductsGateway', () => {
     });
 
     describe('#deleteById', () => {
+
         it('deletes all rows given the table1_id', (done) => {
-            let id1  = 9;
+            let id1 = 9;
             let id2a = 10;
             let id2b = 11;
 
@@ -161,7 +161,7 @@ describe('OrdersProductsGateway', () => {
             ordersProductsGateway.createRow(id1, id2a, createRow2aComplete);
             ordersProductsGateway.createRow(id1, id2b, createRow2bComplete);
 
-            function createRow2aComplete(err:IError, isSuccess:boolean) {
+            function createRow2aComplete(err: Error, isSuccess: boolean) {
                 if(err) {
                     assert.fail(null, null, err.message);
                     done();
@@ -176,7 +176,7 @@ describe('OrdersProductsGateway', () => {
                 }
             }
 
-            function createRow2bComplete(err:IError, isSuccess:boolean) {
+            function createRow2bComplete(err: Error, isSuccess: boolean) {
                 if(err) {
                     assert.fail(null, null, err.message);
                     done();
@@ -197,7 +197,7 @@ describe('OrdersProductsGateway', () => {
                 }
             }
 
-            function deleteRowsCallback(err:IError, affectedRows:number) {
+            function deleteRowsCallback(err: Error, affectedRows: number) {
                 if(err) {
                     assert.fail(null, null, err.message);
                     done();

@@ -1,40 +1,37 @@
 import mysql = require('mysql');
-import MySQLDateTimeFormatter = require('./MySQLDateTimeFormatter');
+import { IConnection, IPool } from 'mysql';
+import { MySQLDateTimeFormatter } from "./MySQLDateTimeFormatter";
 
-import {IPool} from 'mysql';
-import {IError} from 'mysql';
-import {IConnection} from 'mysql';
+export class JoinTableGateway {
+    private _pool: IPool;
+    private _tableName: string;
+    private _id1Name: string;
+    private _id2Name: string;
+    private _createdColumnName = '';
 
-class JoinTableGateway {
-    private pool:IPool;
-    private tableName:string;
-    private id1Name:string;
-    private id2Name:string;
-    private createdColumnName = '';
-
-    constructor(connectionPool:IPool, tableName:string, id1Name:string, id2Name:string) {
-        this.pool      = connectionPool;
-        this.tableName = tableName;
-        this.id1Name   = id1Name;
-        this.id2Name   = id2Name;
+    constructor(connectionPool: IPool, tableName: string, id1Name: string, id2Name: string) {
+        this._pool = connectionPool;
+        this._tableName = tableName;
+        this._id1Name = id1Name;
+        this._id2Name = id2Name;
     }
 
-    public setCreatedColumnName(value:string) {
-        this.createdColumnName = value;
+    public setCreatedColumnName(value: string) {
+        this._createdColumnName = value;
     }
 
-    public createRow(id1:any, id2:any, callback:(err:IError, isSuccess:boolean)=>void) {
-        let tableName    = this.tableName;
-        let id1Name      = this.id1Name;
-        let id2Name      = this.id2Name;
-        let createdName  = this.createdColumnName;
-        let created      = JoinTableGateway.mySqlDatetimeString(new Date());
-        let columnNames  = `\`${id1Name}\`, \`${id2Name}\``;
+    public createRow(id1: any, id2: any, callback: (err: Error, isSuccess: boolean) => void) {
+        let tableName = this._tableName;
+        let id1Name = this._id1Name;
+        let id2Name = this._id2Name;
+        let createdName = this._createdColumnName;
+        let created = JoinTableGateway.mySqlDatetimeString(new Date());
+        let columnNames = `\`${id1Name}\`, \`${id2Name}\``;
         let placeholders = '?, ?';
-        let values       = [id1, id2];
+        let values = [id1, id2];
 
         if(createdName.length > 0) {
-            columnNames  += `, \`${createdName}\``;
+            columnNames += `, \`${createdName}\``;
             placeholders += ', ?';
             values.push(created);
         }
@@ -42,10 +39,10 @@ class JoinTableGateway {
         let sql = `INSERT INTO ${tableName} ( ${columnNames} ) VALUES ( ${placeholders} )`;
         sql = mysql.format(sql, values);
 
-        let connection:IConnection = null;
-        this.pool.getConnection(performQuery);
+        let connection: IConnection = null;
+        this._pool.getConnection(performQuery);
 
-        function performQuery(err:IError, conn:IConnection) {
+        function performQuery(err: Error, conn: IConnection) {
             if(err) {
                 callback(err, null);
             } else {
@@ -54,7 +51,7 @@ class JoinTableGateway {
             }
         }
 
-        function releaseConnection(err:IError, result:any[]) {
+        function releaseConnection(err: Error, result: any[]) {
             if(err) {
                 connection.release();
                 callback(err, null);
@@ -70,16 +67,16 @@ class JoinTableGateway {
         }
     }
 
-    public retrieveRow(id1:any, id2:any, callback:(err:IError, row:any[])=>void) {
-        let sql = 'SELECT * FROM ' + this.tableName
-                + ' WHERE ' + this.id1Name + '=? AND ' + this.id2Name + '=? LIMIT 1';
+    public retrieveRow(id1: any, id2: any, callback: (err: Error, row: any[]) => void) {
+        let sql = 'SELECT * FROM ' + this._tableName
+            + ' WHERE ' + this._id1Name + '=? AND ' + this._id2Name + '=? LIMIT 1';
         let values = [id1, id2];
         sql = mysql.format(sql, values);
 
-        let connection:IConnection = null;
-        this.pool.getConnection(getConnectionCallback);
+        let connection: IConnection = null;
+        this._pool.getConnection(getConnectionCallback);
 
-        function getConnectionCallback(err:IError, conn:IConnection) {
+        function getConnectionCallback(err: Error, conn: IConnection) {
             if(err) {
                 callback(err, null);
             } else {
@@ -88,7 +85,7 @@ class JoinTableGateway {
             }
         }
 
-        function releaseConnection(err:IError, result:any[]) {
+        function releaseConnection(err: Error, result: any[]) {
             if(err) {
                 connection.release();
                 callback(err, null);
@@ -104,20 +101,20 @@ class JoinTableGateway {
         }
     }
 
-    public deleteRow(id1:any, id2:any, callback:(err:IError, affectedRows:number)=>void) {
-        let tableName = this.tableName;
-        let id1Name   = this.id1Name;
-        let id2Name   = this.id2Name;
+    public deleteRow(id1: any, id2: any, callback: (err: Error, affectedRows: number) => void) {
+        let tableName = this._tableName;
+        let id1Name = this._id1Name;
+        let id2Name = this._id2Name;
 
         let sql = 'DELETE FROM `' + tableName
             + '` WHERE `' + id1Name + '`=? and `' + id2Name + '`=?';
         let values = [id1, id2];
         sql = mysql.format(sql, values);
 
-        let connection:IConnection = null;
-        this.pool.getConnection(performQuery);
+        let connection: IConnection = null;
+        this._pool.getConnection(performQuery);
 
-        function performQuery(err:IError, conn:IConnection) {
+        function performQuery(err: Error, conn: IConnection) {
             if(err) {
                 callback(err, null);
             } else {
@@ -126,7 +123,7 @@ class JoinTableGateway {
             }
         }
 
-        function releaseConnection(err:IError, result:any[]) {
+        function releaseConnection(err: Error, result: any[]) {
             if(err) {
                 connection.release();
                 callback(err, null);
@@ -137,15 +134,15 @@ class JoinTableGateway {
         }
     }
 
-    public retrieveById(idName:string, idValue:any, callback:(err:IError, rows:any[])=>void) {
-        let tableName = this.tableName;
+    public retrieveById(idName: string, idValue: any, callback: (err: Error, rows: any[]) => void) {
+        let tableName = this._tableName;
         let sql = 'SELECT * FROM `' + tableName + '` where `' + idName + '`=?';
         sql = mysql.format(sql, [idValue]);
 
-        let connection:IConnection = null;
-        this.pool.getConnection(performQuery);
+        let connection: IConnection = null;
+        this._pool.getConnection(performQuery);
 
-        function performQuery(err:IError, conn:IConnection) {
+        function performQuery(err: Error, conn: IConnection) {
             if(err) {
                 callback(err, null);
             } else {
@@ -154,7 +151,7 @@ class JoinTableGateway {
             }
         }
 
-        function releaseConnection(err:IError, result:any[]) {
+        function releaseConnection(err: Error, result: any[]) {
             if(err) {
                 connection.release();
                 callback(err, null);
@@ -165,16 +162,16 @@ class JoinTableGateway {
         }
     }
 
-    public deleteById(idName:string, idValue:any,
-                      callback:(err:IError, affectedRows:number)=>void) {
-        let tableName = this.tableName;
+    public deleteById(idName: string, idValue: any,
+                      callback: (err: Error, affectedRows: number) => void) {
+        let tableName = this._tableName;
         let sql = 'DELETE FROM `' + tableName + '` where `' + idName + '`=?';
         sql = mysql.format(sql, [idValue]);
 
-        let connection:IConnection = null;
-        this.pool.getConnection(performQuery);
+        let connection: IConnection = null;
+        this._pool.getConnection(performQuery);
 
-        function performQuery(err:IError, conn:IConnection) {
+        function performQuery(err: Error, conn: IConnection) {
             if(err) {
                 callback(err, null);
             } else {
@@ -183,7 +180,7 @@ class JoinTableGateway {
             }
         }
 
-        function releaseConnection(err:IError, result:any[]) {
+        function releaseConnection(err: Error, result: any[]) {
             if(err) {
                 connection.release();
                 callback(err, null);
@@ -194,9 +191,7 @@ class JoinTableGateway {
         }
     }
 
-    private static mySqlDatetimeString(date:Date):string {
+    private static mySqlDatetimeString(date: Date): string {
         return MySQLDateTimeFormatter.format(date);
     }
 }
-
-export = JoinTableGateway;

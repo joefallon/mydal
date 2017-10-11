@@ -40,65 +40,71 @@ this type of object is data transfer object (DTO). Here is an
 example entity class for a row in a <code>products</code> table.
 
 ```typescript
-class Product {
-    private _id:number          = 0;
-    private _name:string        = '';
-    private _description:string = null;
-    private _price:number       = 0;
-    private _created:string     = '';
-    private _updated:string     = '';
+export class Product {
+    private _id: number;
+    private _name: string;
+    private _description: string|null;
+    private _price: number;
+    private _created: string;
+    private _updated: string;
 
+    public constructor() {
+        this._id          = 0;
+        this._name        = '';
+        this._description = null;
+        this._price       = 0;
+        this._created     = '';
+        this._updated     = '';
+    }
 
-    public getId():number {
+    public getId(): number {
         return this._id;
     }
 
-    public setId(value:number) {
+    public setId(value: number) {
         this._id = value;
     }
 
-    public getName():string {
+    public getName(): string {
         return this._name;
     }
 
-    public setName(value:string) {
+    public setName(value: string) {
         this._name = value;
     }
 
-    public getDescription():string {
+    public getDescription(): string|null {
         return this._description;
     }
 
-    public setDescription(value:string) {
+    public setDescription(value: string) {
         this._description = value;
     }
 
-    public getPrice():number {
+    public getPrice(): number {
         return this._price;
     }
 
-    public setPrice(value:number) {
+    public setPrice(value: number) {
         this._price = value;
     }
 
-    public getCreated():string {
+    public getCreated(): string {
         return this._created;
     }
 
-    public setCreated(value:string) {
+    public setCreated(value: string) {
         this._created = value;
     }
 
-    public getUpdated():string {
+    public getUpdated(): string {
         return this._updated;
     }
 
-    public setUpdated(value:string) {
+    public setUpdated(value: string) {
         this._updated = value;
     }
 }
-
-export = Product;
 ```
 
 ### TableGateway
@@ -123,29 +129,25 @@ functions:
 
 ```typescript
 // Constructor
-constructor(connectionPool:IPool, tableName:string, primaryKey = 'id');
+constructor(connectionPool: IPool, tableName: string, primaryKey?: string);
 
 // Data access/modification methods
-createRow(obj:any, callback:(err:IError, insertId:number) => void);
-retrieveRow(id:number, cb:(err:IError, row:Object) => void);
-updateRow(row:any, cb:IAffectedRowsCallback);
-deleteRow(id:number, cb:IAffectedRowsCallback);
-retrieveRowsBy(fieldName:string, fieldValue:any, callback:IRetrieveRowsCallback);
-retrieveRowsByIds(ids:number[], cb:IRetrieveRowsCallback);
-retrieveRowsByIsNull(fieldName:string, cb:IRetrieveRowsCallback);
-retrieveRowsByNotEqual(fieldName:string, fieldValue:any, cb:IRetrieveRowsCallback);
-setFieldNullWhere(fieldName:string, fieldValue:any, cb:IAffectedRowsCallback);
-deleteRowsBy(fieldName:string, fieldValue:any, cb:IAffectedRowsCallback);
-countRowsByValue(fieldName:string, fieldValue:any, cb:ICountRowsCallback);
+createRow(obj: any, callback: (err: Error, insertId: number) => void): void;
+retrieveRow(id: number, callback: (err: Error, row: Object) => void): void;
+updateRow(row: any, callback: (err: Error, affectedRows: number) => void): void;
+deleteRow(id: number, callback: (err: Error, affectedRows: number) => void): void;
+retrieveRowsBy(fieldName: string, fieldValue: any, callback: (err: Error, rows: any[]) => void): void;
+retrieveRowsByIds(ids: number[], callback: (err: Error, rows: any[]) => void): void;
+retrieveRowsByIsNull(fieldName: string, callback: (err: Error, rows: any[]) => void): void;
+retrieveRowsByNotEqual(fieldName: string, fieldValue: any, callback: (err: Error, rows: any[]) => void): void;
+setFieldNullWhere(fieldName: string, fieldValue: any, callback: (err: Error, affectedRows: number) => void): void;
+deleteRowsBy(fieldName: string, fieldValue: any, callback: (err: Error, affectedRows: number) => void): void;
+countRowsByValue(fieldName: string, fieldValue: any, callback: (err: Error, count: number) => void): void;
+    
 
 // Used to set optional timestamp columns.
-setCreatedColumnName(value:string);
-setUpdatedColumnName(value:string);
-
-// Interfaces
-interface IAffectedRowsCallback { (err:IError, affectedRows:number):void }
-interface ICountRowsCallback    { (err:IError, count:number):void }
-interface IRetrieveRowsCallback { (err:IError, rows:any[]):void }
+setCreatedColumnName(value: string): void;
+setUpdatedColumnName(value: string): void;
 ```
 
 ### Example Products Table Schema
@@ -164,49 +166,46 @@ updated     string          non-null
 ### Example ProductsGateway
 
 ```typescript
-import Product      = require('../entities/Product');
-import TableGateway = require('../../src/TableGateway');
-
-import {IError} from "mysql";
 import {IPool} from "mysql";
+import {Product} from "../entities/Product";
+import {TableGateway} from "../../src/TableGateway";
 
-class ProductsGateway {
-    private _tableName:string = 'products';
-    private _tableGateway:TableGateway;
 
-    constructor(connectionPool:IPool) {
-        this._tableGateway = new TableGateway(connectionPool, this._tableName);
-        this._tableGateway.setCreatedColumnName('created');
-        this._tableGateway.setUpdatedColumnName('updated');
+export class ProductsGateway {
+    private tableName: string = 'products';
+    private tableGateway: TableGateway;
+
+    constructor(connectionPool: IPool) {
+        this.tableGateway = new TableGateway(connectionPool, this.tableName);
+        this.tableGateway.setCreatedColumnName('created');
+        this.tableGateway.setUpdatedColumnName('updated');
     }
 
-    public createRow(product:Product, callback:(err:IError, insertId:number) => void) {
+    public createRow(product: Product, callback: (err: Error, insertId: number) => void) {
         let row = ProductsGateway.mapProductToRow(product);
-        this._tableGateway.createRow(row, callback);
+        this.tableGateway.createRow(row, callback);
     }
 
-    public retrieveRow(id:number, callback:(err:IError, product:Product) => void) {
-        this._tableGateway.retrieveRow(id, retrieveRowCallback);
+    public retrieveRow(id: number, callback: (err: Error, product: Product) => void) {
+        this.tableGateway.retrieveRow(id, retrieveRowCallback);
 
-        function retrieveRowCallback(err:IError, row:Object[]) {
+        function retrieveRowCallback(err: Error, row: Object[]) {
             if(err) {
                 callback(err, null);
-            } else {
-                if(row.length === 0) {
-                    callback(null, null);
-                }
-
-                let product = ProductsGateway.mapRowToProduct(row[0]);
+            } else if(row) {
+                let product = ProductsGateway.mapRowToProduct(row);
                 callback(null, product);
+            } else {
+                callback(null, null);
             }
         }
     }
 
-    public updateRow(product:Product, callback:(err:IError, affectedRows:number) => void) {
+    public updateRow(product: Product, callback: (err: Error, affectedRows: number) => void) {
         let row = ProductsGateway.mapProductToRow(product);
-        this._tableGateway.updateRow(row, updateRowCallback);
+        this.tableGateway.updateRow(row, updateRowCallback);
 
-        function updateRowCallback(err:IError, affectedRows:number) {
+        function updateRowCallback(err: Error, affectedRows: number) {
             if(err) {
                 callback(err, null);
             } else {
@@ -215,14 +214,15 @@ class ProductsGateway {
         }
     }
 
-    public deleteRow(id:number, callback:(err:IError, affectedRows:number)=>void) {
-        this._tableGateway.deleteRow(id, callback);
+    public deleteRow(id: number, callback: (err: Error, affectedRows: number) => void) {
+        this.tableGateway.deleteRow(id, callback);
     }
 
-    public retrieveByDescription(description:string, callback:(err:IError, products:Product[])=>void) {
-        this._tableGateway.retrieveRowsBy('description', description, retrieveRowsCallback);
+    public retrieveByDescription(description: string,
+                                 callback: (err: Error, products: Product[]) => void) {
+        this.tableGateway.retrieveRowsBy('description', description, retrieveRowsCallback);
 
-        function retrieveRowsCallback(err:IError, rows:any[]) {
+        function retrieveRowsCallback(err: Error, rows: any[]) {
             if(err) {
                 callback(err, null);
             } else {
@@ -238,12 +238,12 @@ class ProductsGateway {
         }
     }
 
-    public retrieveByIds(ids:number[], cb:(err:IError, products:Product[])=>void) {
-        this._tableGateway.retrieveRowsByIds(ids, retrieveRowsCallback);
+    public retrieveByIds(ids: number[], callback: (err: Error, products: Product[]) => void) {
+        this.tableGateway.retrieveRowsByIds(ids, retrieveRowsCallback);
 
-        function retrieveRowsCallback(err:IError, rows:any[]) {
+        function retrieveRowsCallback(err: Error, rows: any[]) {
             if(err) {
-                cb(err, null);
+                callback(err, null);
             } else {
                 let products = [];
 
@@ -252,17 +252,17 @@ class ProductsGateway {
                     products.push(p);
                 }
 
-                cb(null, products);
+                callback(null, products);
             }
         }
     }
 
-    public retrieveByNullDescription(cb:(err:IError, products:Product[])=>void) {
-        this._tableGateway.retrieveRowsByIsNull('description', retrieveCallback);
+    public retrieveByNullDescription(callback: (err: Error, products: Product[]) => void) {
+        this.tableGateway.retrieveRowsByIsNull('description', retrieveCallback);
 
-        function retrieveCallback(err:IError, rows:any[]) {
+        function retrieveCallback(err: Error, rows: any[]) {
             if(err) {
-                cb(err, null);
+                callback(err, null);
             } else {
                 let products = [];
 
@@ -271,17 +271,18 @@ class ProductsGateway {
                     products.push(p);
                 }
 
-                cb(null, products);
+                callback(null, products);
             }
         }
     }
 
-    public retrieveByDescriptionNotEqual(desc:string, cb:(err:IError, products:Product[])=>void) {
-        this._tableGateway.retrieveRowsByNotEqual('description', desc, retrieveCallback);
+    public retrieveByDescriptionNotEqual(description: string,
+                                         callback: (err: Error, products: Product[]) => void) {
+        this.tableGateway.retrieveRowsByNotEqual('description', description, retrieveRowsCallback);
 
-        function retrieveCallback(err:IError, rows:any[]) {
+        function retrieveRowsCallback(err: Error, rows: any[]) {
             if(err) {
-                cb(err, null);
+                callback(err, null);
             } else {
                 let products = [];
 
@@ -290,48 +291,49 @@ class ProductsGateway {
                     products.push(p);
                 }
 
-                cb(null, products);
+                callback(null, products);
             }
         }
     }
 
-    public setDescriptionNullWhereNameIs(value:string, cb:(err:IError, affectedRows:number)=>void) {
-        this._tableGateway.setFieldNullWhere('description', value, setFieldNullCallback);
+    public setDescriptionNullWhereNameIs(value: string,
+                                         callback: (err: Error, affectedRows: number) => void) {
+        this.tableGateway.setFieldNullWhere('description', value, setFieldNullCallback);
 
-        function setFieldNullCallback(err:IError, affectedRows:number) {
+        function setFieldNullCallback(err: Error, affectedRows: number) {
             if(err) {
-                cb(err, null);
+                callback(err, null);
             } else {
-                cb(null, affectedRows);
+                callback(null, affectedRows);
             }
         }
     }
 
-    public deleteWhereNameIs(name:string, cb:(err:IError, affectedRows:number)=>any) {
-        this._tableGateway.deleteRowsBy('name', name, setFieldNullCallback);
+    public deleteWhereNameIs(name: string, callback: (err: Error, affectedRows: number) => any) {
+        this.tableGateway.deleteRowsBy('name', name, setFieldNullCallback);
 
-        function setFieldNullCallback(err:IError, affectedRows:number) {
+        function setFieldNullCallback(err: Error, affectedRows: number) {
             if(err) {
-                cb(err, null);
+                callback(err, null);
             } else {
-                cb(null, affectedRows);
+                callback(null, affectedRows);
             }
         }
     }
 
-    public countProductsByName(name:string, cb:(err:IError, count:number)=>void) {
-        this._tableGateway.countRowsByValue('name', name, countRowsByValueCallback);
+    public countProductsByName(name: string, callback: (err: Error, count: number) => void) {
+        this.tableGateway.countRowsByValue('name', name, countRowsByValueCallback);
 
-        function countRowsByValueCallback(err:IError, count:number) {
+        function countRowsByValueCallback(err: Error, count: number) {
             if(err) {
-                cb(err, null);
+                callback(err, null);
             } else {
-                cb(null, count);
+                callback(null, count);
             }
         }
     }
 
-    private static mapProductToRow(product:Product):Object {
+    private static mapProductToRow(product: Product): Object {
         return {
             'id':          product.getId(),
             'name':        product.getName(),
@@ -342,7 +344,7 @@ class ProductsGateway {
         };
     }
 
-    private static mapRowToProduct(row:Object):Product {
+    private static mapRowToProduct(row: Object): Product {
         let product = new Product();
         product.setId(row['id']);
         product.setName(row['name']);
@@ -355,7 +357,6 @@ class ProductsGateway {
     }
 }
 
-export = ProductsGateway;
 ```
 
 ### Data Mapping
@@ -368,7 +369,7 @@ entity object.
 Here is an example of data mapper functions:
 
 ```typescript
-private static mapProductToRow(product:Product):Object {
+private static mapProductToRow(product: Product): Object {
     return {
         'id':          product.getId(),
         'name':        product.getName(),
@@ -379,7 +380,7 @@ private static mapProductToRow(product:Product):Object {
     };
 }
 
-private static mapRowToProduct(row:Object):Product {
+private static mapRowToProduct(row: Object): Product {
     let product = new Product();
     product.setId(row['id']);
     product.setName(row['name']);
@@ -405,63 +406,59 @@ with a timestamp to represent the time created is provided as well.
 ### Example JoinTableGateway
 
 ```typescript
-import JoinTableGateway = require('../../src/JoinTableGateway');
+import {IPool} from "mysql";
+import {JoinTableGateway} from "../../src/JoinTableGateway";
 
-import {IPool} from 'mysql';
-import {IError} from 'mysql';
+export class OrdersProductsGateway {
+    private tableName = 'orders_products';
+    private id1Name = 'table1_id';
+    private id2Name = 'table2_id';
+    private joinTableGateway: JoinTableGateway;
 
-class OrdersProductsGateway {
-    private _tableName = 'orders_products';
-    private _id1Name   = 'table1_id';
-    private _id2Name   = 'table2_id';
-    private _joinTableGateway:JoinTableGateway;
-
-    constructor(connectionPool:IPool) {
-        let table = this._tableName;
-        let id1   = this._id1Name;
-        let id2   = this._id2Name;
-        this._joinTableGateway = new JoinTableGateway(connectionPool, table, id1, id2);
-        this._joinTableGateway.setCreatedColumnName('created');
+    constructor(connectionPool: IPool) {
+        let table = this.tableName;
+        let id1 = this.id1Name;
+        let id2 = this.id2Name;
+        this.joinTableGateway = new JoinTableGateway(connectionPool, table, id1, id2);
+        this.joinTableGateway.setCreatedColumnName('created');
     }
 
-    public createRow(id1:number, id2:number, cb:(err:IError, isSuccess:boolean)=>void) {
-        this._joinTableGateway.createRow(id1, id2, createRowCallback);
+    public createRow(id1: number, id2: number, callback: (err: Error, isSuccess: boolean) => void) {
+        this.joinTableGateway.createRow(id1, id2, createRowCallback);
 
-        function createRowCallback(err:IError, isSuccess:boolean) {
+        function createRowCallback(err: Error, isSuccess: boolean) {
             if(err) {
-                cb(err, false);
+                callback(err, false);
             } else {
-                cb(null, isSuccess);
+                callback(null, isSuccess);
             }
         }
     }
 
-    public retrieveRow(id1:number, id2:number, cb:(err:IError, row:any[])=>void) {
-        this._joinTableGateway.retrieveRow(id1, id2, retrieveRowCallback);
+    public retrieveRow(id1: number, id2: number, callback: (err: Error, row: any[]) => void) {
+        this.joinTableGateway.retrieveRow(id1, id2, retrieveRowCallback);
 
-        function retrieveRowCallback(err:IError, row:any[]) {
+        function retrieveRowCallback(err: Error, row: any[]) {
             if(err) {
-                cb(err, null);
+                callback(err, null);
             } else {
-                cb(null, row);
+                callback(null, row);
             }
         }
     }
 
-    public deleteRow(id1:number, id2:number, cb:(err:IError, affectedRows:number)=>void) {
-        this._joinTableGateway.deleteRow(id1, id2, cb);
+    public deleteRow(id1: number, id2: number, callback: (err: Error, affectedRows: number) => void) {
+        this.joinTableGateway.deleteRow(id1, id2, callback);
     }
 
-    public retrieveByTable1Id(id1:number, cb:(err:IError, rows:any[])=>void) {
-        this._joinTableGateway.retrieveById('table1_id', id1, cb);
+    public retrieveByTable1Id(id1: number, callback: (err: Error, rows: any[]) => void) {
+        this.joinTableGateway.retrieveById('table1_id', id1, callback);
     }
 
-    public deleteByTable1Id(id1:number, cb:(err:IError, affectedRows:number)=>void) {
-        this._joinTableGateway.deleteById('table1_id', id1, cb);
+    public deleteByTable1Id(id1: number, callback: (err: Error, affectedRows: number) => void) {
+        this.joinTableGateway.deleteById('table1_id', id1, callback);
     }
 }
-
-export = OrdersProductsGateway;
 ```
 
 ## Development

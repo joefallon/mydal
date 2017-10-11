@@ -1,8 +1,5 @@
-require('../config/global_before');
-import Product = require('./Product');
-
-import chai = require('chai');
-let assert  = chai.assert;
+import {Product} from './Product';
+import assert = require('assert');
 
 describe('ProductTest', () => {
 

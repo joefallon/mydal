@@ -1,14 +1,11 @@
-require('../config/global_before');
-import Product                = require('../entities/Product');
-import ProductsGatewayFactory = require('./ProductsGatewayFactory');
-
-import {IError} from 'mysql';
-
-import chai = require('chai');
-let assert  = chai.assert;
+import assert = require('assert');
+import {Product} from "../entities/Product";
+import {ProductsGatewayFactory} from "./ProductsGatewayFactory";
 
 describe('ProductsGateway', () => {
+
     describe('#createRow and #retrieveRow', () => {
+
         it('creates and retrieves a row in the database', (done) => {
             let product = new Product();
             product.setDescription('test desc');
@@ -16,10 +13,10 @@ describe('ProductsGateway', () => {
             product.setPrice(1.11);
 
             let productsGateway = ProductsGatewayFactory.create();
-            let id:number = 0;
+            let id: number = 0;
             productsGateway.createRow(product, retrieveRow);
 
-            function retrieveRow(err:IError, insertId:number) {
+            function retrieveRow(err: Error, insertId: number) {
                 if(err) {
                     assert.fail(null, null, err.message);
                     done();
@@ -29,18 +26,18 @@ describe('ProductsGateway', () => {
                 }
             }
 
-            function verifyRetrievedRow(err:IError, product:Product) {
+            function verifyRetrievedRow(err: Error, product: Product) {
                 if(err) {
                     assert.fail(null, null, err.message);
                 } else {
                     assert.equal(product.getDescription(), 'test desc');
-                    assert.equal(product.getId(),    id);
-                    assert.equal(product.getName(),  'test name');
+                    assert.equal(product.getId(), id);
+                    assert.equal(product.getName(), 'test name');
                     assert.equal(product.getPrice(), 1.11);
 
-                    assert.isAbove(product.getId(), 0);
-                    assert.isAbove(product.getCreated().length, 0);
-                    assert.isAbove(product.getUpdated().length, 0);
+                    assert.ok(product.getId() > 0);
+                    assert.ok(product.getCreated().length > 0);
+                    assert.ok(product.getUpdated().length > 0);
                     assert.notEqual(product.getCreated(), '0000-00-00 00:00:00');
                     assert.notEqual(product.getUpdated(), '0000-00-00 00:00:00');
                 }
@@ -57,12 +54,12 @@ describe('ProductsGateway', () => {
             product.setName('name update');
             product.setPrice(1.11);
 
-            let id:number = null;
+            let id: number = null;
             let productsGateway = ProductsGatewayFactory.create();
 
             productsGateway.createRow(product, retrieveRow);
 
-            function retrieveRow(err:IError, insertId:number) {
+            function retrieveRow(err: Error, insertId: number) {
                 if(err) {
                     assert.fail(null, null, err.message);
                     done();
@@ -72,7 +69,7 @@ describe('ProductsGateway', () => {
                 }
             }
 
-            function updateRetrievedRow(err:IError, product:Product) {
+            function updateRetrievedRow(err: Error, product: Product) {
                 if(err) {
                     assert.fail(null, null, err.message);
                     done();
@@ -84,7 +81,7 @@ describe('ProductsGateway', () => {
                 }
             }
 
-            function retrieveUpdatedRow(err:IError, affectedRows:number) {
+            function retrieveUpdatedRow(err: Error, affectedRows: number) {
                 if(err) {
                     assert.fail(null, null, err.message);
                     done();
@@ -94,18 +91,18 @@ describe('ProductsGateway', () => {
                 }
             }
 
-            function verifyUpdatedRow(err:IError, product:Product) {
+            function verifyUpdatedRow(err: Error, product: Product) {
                 if(err) {
                     assert.fail(null, null, err.message);
                 } else {
-                    assert.equal(product.getDescription(),  'updated desc');
-                    assert.equal(product.getId(),           id);
-                    assert.equal(product.getName(),         'updated name');
-                    assert.equal(product.getPrice(),        2.22);
+                    assert.equal(product.getDescription(), 'updated desc');
+                    assert.equal(product.getId(), id);
+                    assert.equal(product.getName(), 'updated name');
+                    assert.equal(product.getPrice(), 2.22);
 
-                    assert.isAbove(product.getId(), 0);
-                    assert.isAbove(product.getCreated().length, 0);
-                    assert.isAbove(product.getUpdated().length, 0);
+                    assert.ok(product.getId() > 0);
+                    assert.ok(product.getCreated().length > 0);
+                    assert.ok(product.getUpdated().length > 0);
                     assert.notEqual(product.getCreated(), '0000-00-00 00:00:00');
                     assert.notEqual(product.getUpdated(), '0000-00-00 00:00:00');
                 }
@@ -122,12 +119,12 @@ describe('ProductsGateway', () => {
             product.setName('name delete');
             product.setPrice(1.11);
 
-            let id:number = null;
+            let id: number = null;
             let productsGateway = ProductsGatewayFactory.create();
 
             productsGateway.createRow(product, retrieveRow);
 
-            function retrieveRow(err:IError, insertId:number) {
+            function retrieveRow(err: Error, insertId: number) {
                 if(err) {
                     assert.fail(null, null, err.message);
                     done();
@@ -137,7 +134,7 @@ describe('ProductsGateway', () => {
                 }
             }
 
-            function deleteRow(err:IError, product:Product) {
+            function deleteRow(err: Error, product: Product) {
                 if(err) {
                     assert.fail(null, null, err.message);
                     done();
@@ -146,7 +143,7 @@ describe('ProductsGateway', () => {
                 }
             }
 
-            function retrieveDeletedRow(err:IError, affectedRows:number) {
+            function retrieveDeletedRow(err: Error, affectedRows: number) {
                 if(err) {
                     assert.fail(null, null, err.message);
                     done();
@@ -156,12 +153,12 @@ describe('ProductsGateway', () => {
                 }
             }
 
-            function verifyRowDeleted(err:IError, product:Product) {
+            function verifyRowDeleted(err: Error, product: Product) {
                 if(err) {
                     assert.fail(null, null, err.message);
                     done();
                 } else {
-                    assert.isNull(product);
+                    assert.equal(product, null);
                 }
 
                 done();
@@ -170,6 +167,7 @@ describe('ProductsGateway', () => {
     });
 
     describe('#retrieveRowsBy', () => {
+
         it('retrieves all rows with the given field value', (done) => {
             let product1 = new Product();
             product1.setName('retrieveRowsBy1');
@@ -182,13 +180,13 @@ describe('ProductsGateway', () => {
             product2.setPrice(2.22);
 
             let productsGateway = ProductsGatewayFactory.create();
-            let id1:number = null;
-            let id2:number = null;
+            let id1: number = null;
+            let id2: number = null;
 
             productsGateway.createRow(product1, createProduct1RowCallback);
             productsGateway.createRow(product2, createProduct2RowCallback);
 
-            function createProduct1RowCallback(err:IError, insertId:number) {
+            function createProduct1RowCallback(err: Error, insertId: number) {
                 if(err) {
                     assert.fail(null, null, err.message);
                     done();
@@ -198,7 +196,7 @@ describe('ProductsGateway', () => {
                 }
             }
 
-            function createProduct2RowCallback(err:IError, insertId:number) {
+            function createProduct2RowCallback(err: Error, insertId: number) {
                 if(err) {
                     assert.fail(null, null, err.message);
                     done();
@@ -210,21 +208,29 @@ describe('ProductsGateway', () => {
 
             function retrieveRows() {
                 if(id1 > 0 && id2 > 0) {
+                    // enforce ordering
+                    if(id1 > id2) {
+                        let temp = id1;
+                        id1 = id2;
+                        id2 = temp;
+                    }
+
                     let description = 'retrieveRowsByDesc';
                     productsGateway.retrieveByDescription(description, verifyRetrievedRows);
                 }
             }
 
-            function verifyRetrievedRows(err:IError, products:Product[]) {
+            function verifyRetrievedRows(err: Error, products: Product[]) {
                 if(err) {
                     assert.fail(null, null, err.message);
                     done();
                 } else {
+
                     let p1 = products[0];
-                    assert.equal(p1.getId(), id1);
+                    assert.equal(p1.getId(), id1, 'p1 id mismatch');
 
                     let p2 = products[1];
-                    assert.equal(p2.getId(), id2);
+                    assert.equal(p2.getId(), id2, 'p2 id mismatch');
 
                     done();
                 }
@@ -245,13 +251,13 @@ describe('ProductsGateway', () => {
             product2.setPrice(2.22);
 
             let productsGateway = ProductsGatewayFactory.create();
-            let id1:number = null;
-            let id2:number = null;
+            let id1: number = null;
+            let id2: number = null;
 
             productsGateway.createRow(product1, createProduct1RowCallback);
             productsGateway.createRow(product2, createProduct2RowCallback);
 
-            function createProduct1RowCallback(err:IError, insertId:number) {
+            function createProduct1RowCallback(err: Error, insertId: number) {
                 if(err) {
                     assert.fail(null, null, err.message);
                     done();
@@ -261,7 +267,7 @@ describe('ProductsGateway', () => {
                 }
             }
 
-            function createProduct2RowCallback(err:IError, insertId:number) {
+            function createProduct2RowCallback(err: Error, insertId: number) {
                 if(err) {
                     assert.fail(null, null, err.message);
                     done();
@@ -273,12 +279,19 @@ describe('ProductsGateway', () => {
 
             function retrieveRows() {
                 if(id1 > 0 && id2 > 0) {
+                    // enforce ordering
+                    if(id1 > id2) {
+                        let temp = id1;
+                        id1 = id2;
+                        id2 = temp;
+                    }
+
                     let ids = [id1, id2];
                     productsGateway.retrieveByIds(ids, verifyRetrievedRows);
                 }
             }
 
-            function verifyRetrievedRows(err:IError, products:Product[]) {
+            function verifyRetrievedRows(err: Error, products: Product[]) {
                 if(err) {
                     assert.fail(null, null, err.message);
                     done();
@@ -306,13 +319,13 @@ describe('ProductsGateway', () => {
             product2.setPrice(2.22);
 
             let productsGateway = ProductsGatewayFactory.create();
-            let id1:number = null;
-            let id2:number = null;
+            let id1: number = null;
+            let id2: number = null;
 
             productsGateway.createRow(product1, createProduct1RowCallback);
             productsGateway.createRow(product2, createProduct2RowCallback);
 
-            function createProduct1RowCallback(err:IError, insertId:number) {
+            function createProduct1RowCallback(err: Error, insertId: number) {
                 if(err) {
                     assert.fail(null, null, err.message);
                     done();
@@ -322,7 +335,7 @@ describe('ProductsGateway', () => {
                 }
             }
 
-            function createProduct2RowCallback(err:IError, insertId:number) {
+            function createProduct2RowCallback(err: Error, insertId: number) {
                 if(err) {
                     assert.fail(null, null, err.message);
                     done();
@@ -334,20 +347,27 @@ describe('ProductsGateway', () => {
 
             function retrieveRows() {
                 if(id1 > 0 && id2 > 0) {
+                    // enforce ordering
+                    if(id1 > id2) {
+                        let temp = id1;
+                        id1 = id2;
+                        id2 = temp;
+                    }
+
                     productsGateway.retrieveByNullDescription(verifyRetrievedRows);
                 }
             }
 
-            function verifyRetrievedRows(err:IError, products:Product[]) {
+            function verifyRetrievedRows(err: Error, products: Product[]) {
                 if(err) {
                     assert.fail(null, null, err.message);
                     done();
                 } else {
                     let p1 = products[0];
-                    assert.equal(p1.getId(), id1);
+                    assert.equal(p1.getId(), id1, 'p1 id mismatch');
 
                     let p2 = products[1];
-                    assert.equal(p2.getId(), id2);
+                    assert.equal(p2.getId(), id2, 'p2 id mismatch');
 
                     done();
                 }
@@ -368,13 +388,13 @@ describe('ProductsGateway', () => {
             product2.setPrice(2.22);
 
             let productsGateway = ProductsGatewayFactory.create();
-            let id1:number = null;
-            let id2:number = null;
+            let id1: number = null;
+            let id2: number = null;
 
             productsGateway.createRow(product1, createProduct1RowCallback);
             productsGateway.createRow(product2, createProduct2RowCallback);
 
-            function createProduct1RowCallback(err:IError, insertId:number) {
+            function createProduct1RowCallback(err: Error, insertId: number) {
                 if(err) {
                     assert.fail(null, null, err.message);
                     done();
@@ -384,7 +404,7 @@ describe('ProductsGateway', () => {
                 }
             }
 
-            function createProduct2RowCallback(err:IError, insertId:number) {
+            function createProduct2RowCallback(err: Error, insertId: number) {
                 if(err) {
                     assert.fail(null, null, err.message);
                     done();
@@ -396,17 +416,24 @@ describe('ProductsGateway', () => {
 
             function retrieveRows() {
                 if(id1 > 0 && id2 > 0) {
+                    // enforce ordering
+                    if(id1 > id2) {
+                        let temp = id1;
+                        id1 = id2;
+                        id2 = temp;
+                    }
+
                     let desc = 'description 1';
                     productsGateway.retrieveByDescriptionNotEqual(desc, verifyRetrievedRow);
                 }
             }
 
-            function verifyRetrievedRow(err:IError, products:Product[]) {
+            function verifyRetrievedRow(err: Error, products: Product[]) {
                 if(err) {
                     assert.fail(null, null, err.message);
                     done();
                 } else {
-                    assert.isAbove(products.length, 0);
+                    assert.ok(products.length > 0);
 
                     done();
                 }
@@ -427,13 +454,13 @@ describe('ProductsGateway', () => {
             product2.setPrice(2.22);
 
             let productsGateway = ProductsGatewayFactory.create();
-            let id1:number = null;
-            let id2:number = null;
+            let id1: number = null;
+            let id2: number = null;
 
             productsGateway.createRow(product1, createProduct1RowCallback);
             productsGateway.createRow(product2, createProduct2RowCallback);
 
-            function createProduct1RowCallback(err:IError, insertId:number) {
+            function createProduct1RowCallback(err: Error, insertId: number) {
                 if(err) {
                     assert.fail(null, null, err.message);
                     done();
@@ -443,7 +470,7 @@ describe('ProductsGateway', () => {
                 }
             }
 
-            function createProduct2RowCallback(err:IError, insertId:number) {
+            function createProduct2RowCallback(err: Error, insertId: number) {
                 if(err) {
                     assert.fail(null, null, err.message);
                     done();
@@ -460,29 +487,35 @@ describe('ProductsGateway', () => {
                 }
             }
 
-            function retrieveNullRows(err:IError, affectedRows:number) {
+            function retrieveNullRows(err: Error, affectedRows: number) {
                 if(err) {
                     assert.fail(null, null, err.message);
                     done();
                 } else {
                     assert.equal(affectedRows, 1);
-                    productsGateway.retrieveByIds([id1, id2], verifyRows);
+                    productsGateway.retrieveRow(id1, verifyRow1);
+                    // productsGateway.retrieveByIds([id1, id2], verifyRows);
                 }
             }
 
-            function verifyRows(err:IError, products:Product[]) {
+            function verifyRow1(err: Error, product: Product) {
                 if(err) {
                     assert.fail(null, null, err.message);
                     done();
                 } else {
-                    let p1 = products[0];
-                    assert.equal(p1.getDescription(), 'null description 1');
-
-                    let p2 = products[1];
-                    assert.equal(p2.getDescription(), null);
-
-                    done();
+                    assert.equal(product.getDescription(), 'null description 1');
+                    productsGateway.retrieveRow(id2, verifyRow2);
                 }
+            }
+
+            function verifyRow2(err: Error, product: Product) {
+                if(err) {
+                    assert.fail(null, null, err.message);
+                } else {
+                    assert.equal(product.getDescription(), null);
+                }
+
+                done();
             }
         });
     });
@@ -500,13 +533,13 @@ describe('ProductsGateway', () => {
             product2.setPrice(2.22);
 
             let productsGateway = ProductsGatewayFactory.create();
-            let id1:number = null;
-            let id2:number = null;
+            let id1: number = null;
+            let id2: number = null;
 
             productsGateway.createRow(product1, createProduct1RowCallback);
             productsGateway.createRow(product2, createProduct2RowCallback);
 
-            function createProduct1RowCallback(err:IError, insertId:number) {
+            function createProduct1RowCallback(err: Error, insertId: number) {
                 if(err) {
                     assert.fail(null, null, err.message);
                     done();
@@ -516,7 +549,7 @@ describe('ProductsGateway', () => {
                 }
             }
 
-            function createProduct2RowCallback(err:IError, insertId:number) {
+            function createProduct2RowCallback(err: Error, insertId: number) {
                 if(err) {
                     assert.fail(null, null, err.message);
                     done();
@@ -528,12 +561,19 @@ describe('ProductsGateway', () => {
 
             function deleteRows() {
                 if(id1 > 0 && id2 > 0) {
+                    // enforce ordering
+                    if(id1 > id2) {
+                        let temp = id1;
+                        id1 = id2;
+                        id2 = temp;
+                    }
+
                     let desc = 'deletes rows name 1';
                     productsGateway.deleteWhereNameIs(desc, retrieveRows);
                 }
             }
 
-            function retrieveRows(err:IError, affectedRows:number) {
+            function retrieveRows(err: Error, affectedRows: number) {
                 if(err) {
                     assert.fail(null, null, err.message);
                     done();
@@ -543,7 +583,7 @@ describe('ProductsGateway', () => {
                 }
             }
 
-            function verifyRows(err:IError, products:Product[]) {
+            function verifyRows(err: Error, products: Product[]) {
                 if(err) {
                     assert.fail(null, null, err.message);
                     done();
@@ -572,13 +612,13 @@ describe('ProductsGateway', () => {
             product2.setPrice(2.22);
 
             let productsGateway = ProductsGatewayFactory.create();
-            let id1:number = null;
-            let id2:number = null;
+            let id1: number = null;
+            let id2: number = null;
 
             productsGateway.createRow(product1, createProduct1RowCallback);
             productsGateway.createRow(product2, createProduct2RowCallback);
 
-            function createProduct1RowCallback(err:IError, insertId:number) {
+            function createProduct1RowCallback(err: Error, insertId: number) {
                 if(err) {
                     assert.fail(null, null, err.message);
                     done();
@@ -588,7 +628,7 @@ describe('ProductsGateway', () => {
                 }
             }
 
-            function createProduct2RowCallback(err:IError, insertId:number) {
+            function createProduct2RowCallback(err: Error, insertId: number) {
                 if(err) {
                     assert.fail(null, null, err.message);
                     done();
@@ -600,11 +640,18 @@ describe('ProductsGateway', () => {
 
             function countRows() {
                 if(id1 > 0 && id2 > 0) {
+                    // enforce ordering
+                    if(id1 > id2) {
+                        let temp = id1;
+                        id1 = id2;
+                        id2 = temp;
+                    }
+
                     productsGateway.countProductsByName('name 1', verifyCount);
                 }
             }
 
-            function verifyCount(err:IError, count:number) {
+            function verifyCount(err: Error, count: number) {
                 if(err) {
                     assert.fail(null, null, err.message);
                     done();
