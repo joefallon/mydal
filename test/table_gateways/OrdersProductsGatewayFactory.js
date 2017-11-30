@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 var ConnectionPoolTestFactory_1 = require("../config/ConnectionPoolTestFactory");
 var OrdersProductsGateway_1 = require("./OrdersProductsGateway");
-var OrdersProductsGatewayFactory = (function () {
+var OrdersProductsGatewayFactory = /** @class */ (function () {
     function OrdersProductsGatewayFactory() {
     }
     OrdersProductsGatewayFactory.create = function () {

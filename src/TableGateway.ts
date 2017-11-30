@@ -1,16 +1,16 @@
 import mysql = require('mysql');
-import { IPool, IConnection } from 'mysql';
+import { Pool, PoolConnection } from 'mysql';
 import { MySQLDateTimeFormatter } from './MySQLDateTimeFormatter';
 
 
 export class TableGateway {
-    private _pool: IPool;
+    private _pool: Pool;
     private _tableName: string;
     private _primaryKey: string;
     private _createdColumnName = '';
     private _updatedColumnName = '';
 
-    constructor(connectionPool: IPool, tableName: string, primaryKey = 'id') {
+    constructor(connectionPool: Pool, tableName: string, primaryKey = 'id') {
         this._pool = connectionPool;
         this._tableName = tableName;
         this._primaryKey = primaryKey;
@@ -41,10 +41,10 @@ export class TableGateway {
         let values = TableGateway.getObjectValues(obj);
         sql = mysql.format(sql, values);
 
-        let connection: IConnection = null;
+        let connection: PoolConnection = null;
         this._pool.getConnection(performQuery);
 
-        function performQuery(err: Error, conn: IConnection) {
+        function performQuery(err: Error, conn: PoolConnection) {
             if(err) {
                 callback(err, null);
             } else {
@@ -70,10 +70,10 @@ export class TableGateway {
 
         let sql = 'SELECT * FROM ' + tableName + ' WHERE `' + primaryKey + '`=' + id + ' LIMIT 1';
 
-        let connection: IConnection = null;
+        let connection: PoolConnection = null;
         this._pool.getConnection(performQuery);
 
-        function performQuery(err: Error, conn: IConnection) {
+        function performQuery(err: Error, conn: PoolConnection) {
             if(err) {
                 callback(err, null);
             } else {
@@ -114,10 +114,10 @@ export class TableGateway {
         let values = TableGateway.getObjectValues(row);
         sql = mysql.format(sql, values);
 
-        let connection: IConnection = null;
+        let connection: PoolConnection = null;
         this._pool.getConnection(performQuery);
 
-        function performQuery(err: Error, conn: IConnection) {
+        function performQuery(err: Error, conn: PoolConnection) {
             if(err) {
                 callback(err, null);
             } else {
@@ -142,10 +142,10 @@ export class TableGateway {
         let primaryKey = this._primaryKey;
         let sql = 'DELETE FROM `' + tableName + '` WHERE `' + primaryKey + '`=' + id;
 
-        let connection: IConnection = null;
+        let connection: PoolConnection = null;
         this._pool.getConnection(performQuery);
 
-        function performQuery(err: Error, conn: IConnection) {
+        function performQuery(err: Error, conn: PoolConnection) {
             if(err) {
                 callback(err, null);
             } else {
@@ -172,10 +172,10 @@ export class TableGateway {
         let values = [fieldName, fieldValue];
         sql = mysql.format(sql, values);
 
-        let connection: IConnection = null;
+        let connection: PoolConnection = null;
         this._pool.getConnection(performQuery);
 
-        function performQuery(err: Error, conn: IConnection) {
+        function performQuery(err: Error, conn: PoolConnection) {
             if(err) {
                 callback(err, null);
             } else {
@@ -208,10 +208,10 @@ export class TableGateway {
         let sql = 'SELECT * FROM `' + table + '` WHERE `'
             + primaryKey + '` IN (' + idsString + ') ORDER BY `' + primaryKey + '`';
 
-        let connection: IConnection = null;
+        let connection: PoolConnection = null;
         this._pool.getConnection(performQuery);
 
-        function performQuery(err: Error, conn: IConnection) {
+        function performQuery(err: Error, conn: PoolConnection) {
             if(err) {
                 callback(err, null);
             } else {
@@ -236,10 +236,10 @@ export class TableGateway {
         let sql = 'SELECT * FROM `' + table + '` WHERE `' + fieldName + '` IS NULL ORDER BY '
             + this._primaryKey;
 
-        let connection: IConnection = null;
+        let connection: PoolConnection = null;
         this._pool.getConnection(performQuery);
 
-        function performQuery(err: Error, conn: IConnection) {
+        function performQuery(err: Error, conn: PoolConnection) {
             if(err) {
                 callback(err, null);
             } else {
@@ -266,10 +266,10 @@ export class TableGateway {
         let values = [fieldName, fieldValue];
         sql = mysql.format(sql, values);
 
-        let connection: IConnection = null;
+        let connection: PoolConnection = null;
         this._pool.getConnection(performQuery);
 
-        function performQuery(err: Error, conn: IConnection) {
+        function performQuery(err: Error, conn: PoolConnection) {
             if(err) {
                 callback(err, null);
             } else {
@@ -296,10 +296,10 @@ export class TableGateway {
         let values = [fieldName, fieldName, fieldValue];
         sql = mysql.format(sql, values);
 
-        let connection: IConnection = null;
+        let connection: PoolConnection = null;
         this._pool.getConnection(performQuery);
 
-        function performQuery(err: Error, conn: IConnection) {
+        function performQuery(err: Error, conn: PoolConnection) {
             if(err) {
                 callback(err, null);
             } else {
@@ -326,10 +326,10 @@ export class TableGateway {
         let values = [fieldName, fieldValue];
         sql = mysql.format(sql, values);
 
-        let connection: IConnection = null;
+        let connection: PoolConnection = null;
         this._pool.getConnection(getConnectionCallback);
 
-        function getConnectionCallback(err: Error, conn: IConnection) {
+        function getConnectionCallback(err: Error, conn: PoolConnection) {
             if(err) {
                 callback(err, null);
             } else {
@@ -357,9 +357,9 @@ export class TableGateway {
         sql = mysql.format(sql, values);
 
         this._pool.getConnection(getConnectionCallback);
-        let connection: IConnection = null;
+        let connection: PoolConnection = null;
 
-        function getConnectionCallback(err: Error, conn: IConnection) {
+        function getConnectionCallback(err: Error, conn: PoolConnection) {
             if(err) {
                 callback(err, null);
             } else {

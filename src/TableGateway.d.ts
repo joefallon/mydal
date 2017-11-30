@@ -1,11 +1,11 @@
-import { IPool } from 'mysql';
+import { Pool } from 'mysql';
 export declare class TableGateway {
     private _pool;
     private _tableName;
     private _primaryKey;
     private _createdColumnName;
     private _updatedColumnName;
-    constructor(connectionPool: IPool, tableName: string, primaryKey?: string);
+    constructor(connectionPool: Pool, tableName: string, primaryKey?: string);
     setCreatedColumnName(value: string): void;
     setUpdatedColumnName(value: string): void;
     createRow(obj: any, callback: (err: Error, insertId: number) => void): void;

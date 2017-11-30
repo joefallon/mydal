@@ -1,4 +1,4 @@
-import {IPool} from "mysql";
+import {Pool} from "mysql";
 import {Product} from "../entities/Product";
 import {TableGateway} from "../../src/TableGateway";
 
@@ -7,7 +7,7 @@ export class ProductsGateway {
     private tableName: string = 'products';
     private tableGateway: TableGateway;
 
-    constructor(connectionPool: IPool) {
+    constructor(connectionPool: Pool) {
         this.tableGateway = new TableGateway(connectionPool, this.tableName);
         this.tableGateway.setCreatedColumnName('created');
         this.tableGateway.setUpdatedColumnName('updated');

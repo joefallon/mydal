@@ -1,15 +1,15 @@
 import assert = require('assert');
 import { ConnectionPoolTestFactory } from './ConnectionPoolTestFactory';
-import { IConnection } from 'mysql';
+import { PoolConnection } from 'mysql';
 
 export class DatabaseUtilities {
     
     public static clean(callback:(err:Error)=>void) {
         let pool = ConnectionPoolTestFactory.create();
-        let connection:IConnection = null;
+        let connection:PoolConnection = null;
         pool.getConnection(disableForeignKeyChecks);
 
-        function disableForeignKeyChecks(err:Error, conn:IConnection) {
+        function disableForeignKeyChecks(err:Error, conn:PoolConnection) {
             if(err) {
                 callback(err);
             } else {

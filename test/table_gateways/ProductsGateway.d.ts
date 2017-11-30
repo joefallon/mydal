@@ -1,9 +1,9 @@
-import { IPool } from "mysql";
+import { Pool } from "mysql";
 import { Product } from "../entities/Product";
 export declare class ProductsGateway {
     private tableName;
     private tableGateway;
-    constructor(connectionPool: IPool);
+    constructor(connectionPool: Pool);
     createRow(product: Product, callback: (err: Error, insertId: number) => void): void;
     retrieveRow(id: number, callback: (err: Error, product: Product) => void): void;
     updateRow(product: Product, callback: (err: Error, affectedRows: number) => void): void;

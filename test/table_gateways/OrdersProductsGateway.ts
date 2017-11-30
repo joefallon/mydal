@@ -1,4 +1,4 @@
-import {IPool} from "mysql";
+import {Pool} from "mysql";
 import {JoinTableGateway} from "../../src/JoinTableGateway";
 
 export class OrdersProductsGateway {
@@ -7,7 +7,7 @@ export class OrdersProductsGateway {
     private id2Name = 'table2_id';
     private joinTableGateway: JoinTableGateway;
 
-    constructor(connectionPool: IPool) {
+    constructor(connectionPool: Pool) {
         let table = this.tableName;
         let id1 = this.id1Name;
         let id2 = this.id2Name;

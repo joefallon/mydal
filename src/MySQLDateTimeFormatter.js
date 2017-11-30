@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-var MySQLDateTimeFormatter = (function () {
+var MySQLDateTimeFormatter = /** @class */ (function () {
     function MySQLDateTimeFormatter() {
     }
     MySQLDateTimeFormatter.format = function (date) {

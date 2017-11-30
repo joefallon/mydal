@@ -1,14 +1,14 @@
 import config = require('./main');
 import mysql  = require('mysql');
-import { IPool, IPoolConfig } from 'mysql';
+import { Pool, PoolConfig } from 'mysql';
 
 
 export class ConnectionPoolTestFactory {
-    private static pool: IPool;
+    private static pool: Pool;
 
     public static create() {
         if(ConnectionPoolTestFactory.pool == null) {
-            let connectionOptions: IPoolConfig = {
+            let connectionOptions: PoolConfig = {
                 host:            config.host,
                 port:            config.port,
                 database:        config.database,

@@ -1,15 +1,15 @@
 import mysql = require('mysql');
-import { IConnection, IPool } from 'mysql';
+import { PoolConnection, Pool } from 'mysql';
 import { MySQLDateTimeFormatter } from "./MySQLDateTimeFormatter";
 
 export class JoinTableGateway {
-    private _pool: IPool;
+    private _pool: Pool;
     private _tableName: string;
     private _id1Name: string;
     private _id2Name: string;
     private _createdColumnName = '';
 
-    constructor(connectionPool: IPool, tableName: string, id1Name: string, id2Name: string) {
+    constructor(connectionPool: Pool, tableName: string, id1Name: string, id2Name: string) {
         this._pool = connectionPool;
         this._tableName = tableName;
         this._id1Name = id1Name;
@@ -39,10 +39,10 @@ export class JoinTableGateway {
         let sql = `INSERT INTO ${tableName} ( ${columnNames} ) VALUES ( ${placeholders} )`;
         sql = mysql.format(sql, values);
 
-        let connection: IConnection = null;
+        let connection: PoolConnection = null;
         this._pool.getConnection(performQuery);
 
-        function performQuery(err: Error, conn: IConnection) {
+        function performQuery(err: Error, conn: PoolConnection) {
             if(err) {
                 callback(err, null);
             } else {
@@ -73,10 +73,10 @@ export class JoinTableGateway {
         let values = [id1, id2];
         sql = mysql.format(sql, values);
 
-        let connection: IConnection = null;
+        let connection: PoolConnection= null;
         this._pool.getConnection(getConnectionCallback);
 
-        function getConnectionCallback(err: Error, conn: IConnection) {
+        function getConnectionCallback(err: Error, conn: PoolConnection) {
             if(err) {
                 callback(err, null);
             } else {
@@ -111,10 +111,10 @@ export class JoinTableGateway {
         let values = [id1, id2];
         sql = mysql.format(sql, values);
 
-        let connection: IConnection = null;
+        let connection: PoolConnection= null;
         this._pool.getConnection(performQuery);
 
-        function performQuery(err: Error, conn: IConnection) {
+        function performQuery(err: Error, conn: PoolConnection) {
             if(err) {
                 callback(err, null);
             } else {
@@ -139,10 +139,10 @@ export class JoinTableGateway {
         let sql = 'SELECT * FROM `' + tableName + '` where `' + idName + '`=?';
         sql = mysql.format(sql, [idValue]);
 
-        let connection: IConnection = null;
+        let connection: PoolConnection= null;
         this._pool.getConnection(performQuery);
 
-        function performQuery(err: Error, conn: IConnection) {
+        function performQuery(err: Error, conn: PoolConnection) {
             if(err) {
                 callback(err, null);
             } else {
@@ -168,10 +168,10 @@ export class JoinTableGateway {
         let sql = 'DELETE FROM `' + tableName + '` where `' + idName + '`=?';
         sql = mysql.format(sql, [idValue]);
 
-        let connection: IConnection = null;
+        let connection: PoolConnection= null;
         this._pool.getConnection(performQuery);
 
-        function performQuery(err: Error, conn: IConnection) {
+        function performQuery(err: Error, conn: PoolConnection) {
             if(err) {
                 callback(err, null);
             } else {
