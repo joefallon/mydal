@@ -1,6 +1,6 @@
 import mysql = require('mysql');
 import { PoolConnection, Pool } from 'mysql';
-import { MySQLDateTimeFormatter } from "./MySQLDateTimeFormatter";
+import { MySqlDate } from '@joefallon/mysql-date/src/MySqlDate';
 
 export class JoinTableGateway {
     private _pool: Pool;
@@ -192,6 +192,6 @@ export class JoinTableGateway {
     }
 
     private static mySqlDatetimeString(date: Date): string {
-        return MySQLDateTimeFormatter.format(date);
+        return MySqlDate.toMySqlDate(date);
     }
 }

@@ -5,8 +5,9 @@
   "main": "index.js",
   "types": "index.d.ts",
   "scripts": {
-    "debug": "./node_modules/mocha/bin/mocha --recursive --debug-brk",
-    "test": "./node_modules/mocha/bin/mocha --recursive -s 0"
+    "mocha": "./node_modules/mocha/bin/mocha",
+    "test": "npm run --silent mocha -- './test/**/*.test.js' --reporter dot || true",
+    "test:debug": "npm run mocha -- './test/**/*.test.js' --inspect-brk=0.0.0.0:9229"
   },
   "repository": {
     "type": "git",
@@ -31,6 +32,7 @@
     "mocha": "^4.1.0"
   },
   "dependencies": {
+    "@joefallon/mysql-date": "^0.1.0",
     "@types/mysql": "^2.15.2",
     "db-migrate": "^0.10.2",
     "db-migrate-mysql": "^1.1.10",
