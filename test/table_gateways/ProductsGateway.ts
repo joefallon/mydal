@@ -21,7 +21,7 @@ export class ProductsGateway {
     public retrieveRow(id: number, callback: (err: Error, product: Product) => void) {
         this.tableGateway.retrieveRow(id, retrieveRowCallback);
 
-        function retrieveRowCallback(err: Error, row: Object[]) {
+        function retrieveRowCallback(err: Error, row: Object) {
             if(err) {
                 callback(err, null);
             } else if(row) {
