@@ -2,6 +2,7 @@ import mysql = require('mysql');
 import { Pool, PoolConnection } from 'mysql';
 import { MySqlDate } from '@joefallon/mysql-date/src/MySqlDate';
 
+import { Util } from './Util';
 
 export class TableGateway {
     private _pool: Pool;
@@ -24,21 +25,22 @@ export class TableGateway {
         this._updatedColumnName = value;
     }
 
-    public createRow(obj: any, callback: (err: Error, insertId: number) => void) {
+    public createRow(row: any, callback: (err: Error, insertId: number) => void) {
+        row = Util.shallowClone(row); // prevents mysql from modifying source object
         let tableName = this._tableName;
         let primaryKey = this._primaryKey;
-        delete obj[primaryKey];
+        delete row[primaryKey];
 
         // noinspection AssignmentToFunctionParameterJS
-        obj = this.timestampCreatedColumn(obj);
+        row = this.timestampCreatedColumn(row);
         // noinspection AssignmentToFunctionParameterJS
-        obj = this.timestampUpdatedColumn(obj);
+        row = this.timestampUpdatedColumn(row);
 
-        let columnNames = TableGateway.getColumnNames(obj);
-        let placeholders = TableGateway.getPlaceholders(obj);
+        let columnNames = TableGateway.getColumnNames(row);
+        let placeholders = TableGateway.getPlaceholders(row);
 
         let sql = `INSERT INTO ${tableName} ( ${columnNames} ) VALUES ( ${placeholders} )`;
-        let values = TableGateway.getObjectValues(obj);
+        let values = TableGateway.getObjectValues(row);
         sql = mysql.format(sql, values);
 
         let connection: PoolConnection = null;
@@ -62,6 +64,21 @@ export class TableGateway {
                 callback(null, result['insertId']);
             }
         }
+    }
+
+    /**
+     * Creates the row in the database.
+     *
+     * @param row
+     * @returns {Promise<number>} Returns a promise containing the insert ID of the row.
+     */
+    public createRowWithPromise(row: any): Promise<number> {
+        return new Promise(async (resolve, reject) => {
+            this.createRow(row, (err: Error, insertId: number) => {
+                if(err) { return reject(err); }
+                resolve(insertId);
+            });
+        });
     }
 
     public retrieveRow(id: number, callback: (err: Error, row: Object) => void) {
@@ -92,13 +109,28 @@ export class TableGateway {
                 if(row.length == 0) {
                     callback(null, null);
                 } else {
-                    callback(null, row[0]);
+                    const out = Util.shallowClone(row[0]); // prevents mysql from modifying source object
+                    callback(null, out);
                 }
             }
         }
     }
 
+    /**
+     * @param {number} id
+     * @returns {Promise<any>} Returns a promise containing the retrieved row.
+     */
+    public retrieveRowWithPromise(id: number): Promise<any> {
+        return new Promise(async (resolve, reject) => {
+            this.retrieveRow(id, (err: Error, row: Object) => {
+                if(err) { return reject(err); }
+                resolve(row);
+            });
+        });
+    }
+
     public updateRow(row: any, callback: (err: Error, affectedRows: number) => void) {
+        row = Util.shallowClone(row); // prevents mysql from modifying source object
         let tableName = this._tableName;
         let primaryKeyName = this._primaryKey;
         let primaryKeyValue = row[primaryKeyName];
@@ -137,6 +169,19 @@ export class TableGateway {
         }
     }
 
+    /**
+     * @param row
+     * @returns {Promise<number>} Returns a promise containing the number of affected rows (i.e. 0 or 1).
+     */
+    public updateRowWithPromise(row: any): Promise<number> {
+        return new Promise(async (resolve, reject) => {
+            this.updateRow(row, (err: Error, affectedRows: number) => {
+                if(err) { return reject(err); }
+                resolve(affectedRows);
+            });
+        });
+    }
+
     public deleteRow(id: number, callback: (err: Error, affectedRows: number) => void) {
         let tableName = this._tableName;
         let primaryKey = this._primaryKey;
@@ -165,6 +210,19 @@ export class TableGateway {
         }
     }
 
+    /**
+     * @param {number} id
+     * @returns {Promise<number>} Returns a promise containing the number of affected rows (i.e. 0 or 1).
+     */
+    public deleteRowWithPromise(id: number): Promise<number> {
+        return new Promise(async (resolve, reject) => {
+            this.deleteRow(id, (err: Error, affectedRows: number) => {
+                if(err) { return reject(err); }
+                resolve(affectedRows);
+            });
+        });
+    }
+
     public retrieveRowsBy(fieldName: string, fieldValue: any,
                           callback: (err: Error, rows: any[]) => void) {
         let tableName = this._tableName;
@@ -190,9 +248,24 @@ export class TableGateway {
                 callback(err, null);
             } else {
                 connection.release();
-                callback(null, rows);
+                const out = Util.shallowCloneArray(rows);
+                callback(null, out);
             }
         }
+    }
+
+    /**
+     * @param {string} fieldName
+     * @param fieldValue
+     * @returns {Promise<any[]>} Returns a promise containing the retrieved rows.
+     */
+    public retrieveRowsByWithPromise(fieldName: string, fieldValue: any): Promise<any[]> {
+        return new Promise(async (resolve, reject) => {
+            this.retrieveRowsBy(fieldName, fieldValue, (err: Error, rows: any[]) => {
+                if(err) { return reject(err); }
+                resolve(rows);
+            });
+        });
     }
 
     public retrieveRowsByIds(ids: number[], callback: (err: Error, rows: any[]) => void) {
@@ -226,9 +299,23 @@ export class TableGateway {
                 callback(err, null);
             } else {
                 connection.release();
-                callback(null, rows);
+                const out = Util.shallowCloneArray(rows);
+                callback(null, out);
             }
         }
+    }
+
+    /**
+     * @param {number[]} ids
+     * @returns {Promise<any[]>} Returns a promise containing the retrieved rows.
+     */
+    public retrieveRowsByIdsWithPromise(ids: number[]): Promise<any[]> {
+        return new Promise(async (resolve, reject) => {
+            this.retrieveRowsByIds(ids, (err: Error, rows: any[]) => {
+                if(err) { return reject(err); }
+                resolve(rows);
+            });
+        });
     }
 
     public retrieveRowsByIsNull(fieldName: string, callback: (err: Error, rows: any[]) => void) {
@@ -254,9 +341,23 @@ export class TableGateway {
                 callback(err, null);
             } else {
                 connection.release();
-                callback(null, rows);
+                const out = Util.shallowCloneArray(rows);
+                callback(null, out);
             }
         }
+    }
+
+    /**
+     * @param {string} fieldName
+     * @returns {Promise<any[]>} Returns a promise containing the retrieved rows.
+     */
+    public retrieveRowsByIsNullWithPromise(fieldName: string): Promise<any[]> {
+        return new Promise(async (resolve, reject) => {
+            this.retrieveRowsByIsNull(fieldName, (err: Error, rows: any[]) => {
+                if(err) { return reject(err); }
+                resolve(rows);
+            });
+        });
     }
 
     public retrieveRowsByNotEqual(fieldName: string, fieldValue: any,
@@ -284,9 +385,24 @@ export class TableGateway {
                 callback(err, null);
             } else {
                 connection.release();
-                callback(null, rows);
+                const out = Util.shallowCloneArray(rows);
+                callback(null, out);
             }
         }
+    }
+
+    /**
+     * @param {string} fieldName
+     * @param fieldValue
+     * @returns {Promise<any[]>} Returns a promise containing the retrieved rows.
+     */
+    public retrieveRowsByNotEqualWithPromise(fieldName: string, fieldValue: any): Promise<any[]> {
+        return new Promise(async (resolve, reject) => {
+            this.retrieveRowsByNotEqual(fieldName, fieldValue, (err: Error, rows: any[]) => {
+                if(err) { return reject(err); }
+                resolve(rows);
+            });
+        });
     }
 
     public setFieldNullWhere(fieldName: string, fieldValue: any,
@@ -319,6 +435,20 @@ export class TableGateway {
         }
     }
 
+    /**
+     * @param {string} fieldName
+     * @param fieldValue
+     * @returns {Promise<number>} Returns a promise containing the number of affected rows.
+     */
+    public setFieldNullWhereWithPromise(fieldName: string, fieldValue: any): Promise<number> {
+        return new Promise(async (resolve, reject) => {
+            this.setFieldNullWhere(fieldName, fieldValue, (err: Error, affectedRows: number) => {
+                if(err) { return reject(err); }
+                resolve(affectedRows);
+            });
+        });
+    }
+
     public deleteRowsBy(fieldName: string, fieldValue: any,
                         callback: (err: Error, affectedRows: number) => void) {
         let table = this._tableName;
@@ -347,6 +477,20 @@ export class TableGateway {
                 callback(null, result['affectedRows']);
             }
         }
+    }
+
+    /**
+     * @param {string} fieldName
+     * @param fieldValue
+     * @returns {Promise<number>} Returns a promise containing the number of affected rows.
+     */
+    public deleteRowsByWithPromise(fieldName: string, fieldValue: any): Promise<number> {
+        return new Promise(async (resolve, reject) => {
+            this.deleteRowsBy(fieldName, fieldValue, (err: Error, affectedRows: number) => {
+                if(err) { return reject(err); }
+                resolve(affectedRows);
+            });
+        });
     }
 
     public countRowsByValue(fieldName: string, fieldValue: any,
@@ -379,10 +523,24 @@ export class TableGateway {
         }
     }
 
+    /**
+     * @param {string} fieldName
+     * @param fieldValue
+     * @returns {Promise<number>} Returns a promise containing the number of rows with the chosen value.
+     */
+    public countRowsByValueWithPromise(fieldName: string, fieldValue: any): Promise<number> {
+        return new Promise(async (resolve, reject) => {
+            this.countRowsByValue(fieldName, fieldValue, (err: Error, count: number) => {
+                if(err) { return reject(err); }
+                resolve(count);
+            });
+        });
+    }
+
     private timestampCreatedColumn(obj: Object): Object {
         if(this._createdColumnName.length > 0) {
             let date = new Date();
-            obj[this._createdColumnName] = TableGateway.mySqlDatetimeString(date);
+            obj[this._createdColumnName] = MySqlDate.toMySqlDate(date);
         }
 
         return obj;
@@ -391,7 +549,7 @@ export class TableGateway {
     private timestampUpdatedColumn(obj: Object): Object {
         if(this._updatedColumnName.length > 0) {
             let date = new Date();
-            obj[this._updatedColumnName] = TableGateway.mySqlDatetimeString(date);
+            obj[this._updatedColumnName] = MySqlDate.toMySqlDate(date);
         }
 
         return obj;
@@ -421,10 +579,6 @@ export class TableGateway {
         let colNamesString = columnNames.join(', ');
 
         return colNamesString;
-    }
-
-    private static mySqlDatetimeString(date: Date): string {
-        return MySqlDate.toMySqlDate(date);
     }
 
     private static getParameterizedValues(obj: any) {

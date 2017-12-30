@@ -2,7 +2,6 @@ import config = require('./main');
 import mysql  = require('mysql');
 import { Pool, PoolConfig } from 'mysql';
 
-
 export class ConnectionPoolTestFactory {
     private static pool: Pool;
 

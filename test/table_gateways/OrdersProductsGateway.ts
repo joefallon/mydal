@@ -15,39 +15,53 @@ export class OrdersProductsGateway {
         this.joinTableGateway.setCreatedColumnName('created');
     }
 
-    public createRow(id1: number, id2: number, callback: (err: Error, isSuccess: boolean) => void) {
-        this.joinTableGateway.createRow(id1, id2, createRowCallback);
-
-        function createRowCallback(err: Error, isSuccess: boolean) {
-            if(err) {
-                callback(err, false);
-            } else {
-                callback(null, isSuccess);
-            }
+    public async createRow(id1: number, id2: number, callback: (err: Error, isSuccess: boolean) => void) {
+        try {
+            const isSuccess = await this.joinTableGateway.createRowWithPromise(id1, id2);
+            callback(null, isSuccess);
+        }
+        catch(e) {
+            callback(e, null);
         }
     }
 
-    public retrieveRow(id1: number, id2: number, callback: (err: Error, row: any[]) => void) {
-        this.joinTableGateway.retrieveRow(id1, id2, retrieveRowCallback);
-
-        function retrieveRowCallback(err: Error, row: any[]) {
-            if(err) {
-                callback(err, null);
-            } else {
-                callback(null, row);
-            }
+    public async retrieveRow(id1: number, id2: number, callback: (err: Error, row: any[]) => void) {
+        try {
+            const row = await this.joinTableGateway.retrieveRowWithPromise(id1, id2);
+            callback(null, row);
+        }
+        catch(e) {
+            callback(e, null);
         }
     }
 
-    public deleteRow(id1: number, id2: number, callback: (err: Error, affectedRows: number) => void) {
-        this.joinTableGateway.deleteRow(id1, id2, callback);
+    public async deleteRow(id1: number, id2: number, callback: (err: Error, affectedRows: number) => void) {
+        try {
+            const affectedRows = await this.joinTableGateway.deleteRowWithPromise(id1, id2);
+            callback(null, affectedRows);
+        }
+        catch(e) {
+            callback(e, null);
+        }
     }
 
-    public retrieveByTable1Id(id1: number, callback: (err: Error, rows: any[]) => void) {
-        this.joinTableGateway.retrieveById('table1_id', id1, callback);
+    public async retrieveByTable1Id(id1: number, callback: (err: Error, rows: any[]) => void) {
+        try {
+            const rows = await this.joinTableGateway.retrieveByIdWithPromise('table1_id', id1);
+            callback(null, rows);
+        }
+        catch(e) {
+            callback(e, null);
+        }
     }
 
-    public deleteByTable1Id(id1: number, callback: (err: Error, affectedRows: number) => void) {
-        this.joinTableGateway.deleteById('table1_id', id1, callback);
+    public async deleteByTable1Id(id1: number, callback: (err: Error, affectedRows: number) => void) {
+        try {
+            const affectedRows = await this.joinTableGateway.deleteByIdWithPromise('table1_id', id1);
+            callback(null, affectedRows);
+        }
+        catch(e) {
+            callback(e, null);
+        }
     }
 }

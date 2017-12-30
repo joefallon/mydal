@@ -6,6 +6,7 @@ By [Joe Fallon](http://blog.joefallon.net)
 
 MyDAL has the following features:
 
+*   Promise support.
 *   Full suite of unit tests.
 *   It can be integrated into any existing project.
 *   Can be fully understood in just a few moments.
@@ -33,13 +34,20 @@ TableGateway
 JoinTableGateway
 ```
 
+Additionally, there is a factory called <code>ConnectionPoolFactory</code> for creating 
+MySQL connection pools.
+
+```
+public static create(poolConfig: PoolConfig): Pool;
+````
+
 ### Entities
 
 An entity represents a single row within a database. Another name for
 this type of object is data transfer object (DTO). Here is an
 example entity class for a row in a <code>products</code> table.
 
-```typescript
+```
 export class Product {
     private _id: number;
     private _name: string;
@@ -124,28 +132,74 @@ Optionally, two additional columns are provided for <code>created</code>
 and <code>updated</code> timestamps. The name of those to columns is
 configurable by you.
 
-The <code>TableGateway</code> provides the following table access
-functions:
+The <code>TableGateway</code> provides the following constructor:
 
-```typescript
-// Constructor
+```
+// If no primary key is supplied, then "id" is assumed.
 constructor(connectionPool: IPool, tableName: string, primaryKey?: string);
+```
 
-// Data access/modification methods
+The <code>TableGateway</code> provides the following callback style data access and 
+modification methods:
+
+```
 createRow(obj: any, callback: (err: Error, insertId: number) => void): void;
-retrieveRow(id: number, callback: (err: Error, row: Object) => void): void;
-updateRow(row: any, callback: (err: Error, affectedRows: number) => void): void;
-deleteRow(id: number, callback: (err: Error, affectedRows: number) => void): void;
-retrieveRowsBy(fieldName: string, fieldValue: any, callback: (err: Error, rows: any[]) => void): void;
-retrieveRowsByIds(ids: number[], callback: (err: Error, rows: any[]) => void): void;
-retrieveRowsByIsNull(fieldName: string, callback: (err: Error, rows: any[]) => void): void;
-retrieveRowsByNotEqual(fieldName: string, fieldValue: any, callback: (err: Error, rows: any[]) => void): void;
-setFieldNullWhere(fieldName: string, fieldValue: any, callback: (err: Error, affectedRows: number) => void): void;
-deleteRowsBy(fieldName: string, fieldValue: any, callback: (err: Error, affectedRows: number) => void): void;
-countRowsByValue(fieldName: string, fieldValue: any, callback: (err: Error, count: number) => void): void;
-    
 
-// Used to set optional timestamp columns.
+retrieveRow(id: number, callback: (err: Error, row: Object) => void): void;
+
+updateRow(row: any, callback: (err: Error, affectedRows: number) => void): void;
+
+deleteRow(id: number, callback: (err: Error, affectedRows: number) => void): void;
+
+retrieveRowsBy(fieldName: string, fieldValue: any, callback: (err: Error, rows: any[]) => void): void;
+
+retrieveRowsByIds(ids: number[], callback: (err: Error, rows: any[]) => void): void;
+
+retrieveRowsByIsNull(fieldName: string, callback: (err: Error, rows: any[]) => void): void;
+
+retrieveRowsByNotEqual(fieldName: string, fieldValue: any, 
+                       callback: (err: Error, rows: any[]) => void): void;
+
+setFieldNullWhere(fieldName: string, fieldValue: any, 
+                  callback: (err: Error, affectedRows: number) => void): void;
+
+deleteRowsBy(fieldName: string, fieldValue: any, 
+             callback: (err: Error, affectedRows: number) => void): void;
+
+countRowsByValue(fieldName: string, fieldValue: any, 
+                 callback: (err: Error, count: number) => void): void;
+```
+
+The <code>TableGateway</code> provides the following promise style data access and 
+modification methods: 
+
+```
+createRowWithPromise(row: any): Promise<number>;
+
+retrieveRowWithPromise(id: number): Promise<any>;
+
+updateRowWithPromise(row: any): Promise<number>;
+
+deleteRowWithPromise(id: number): Promise<number>;
+
+retrieveRowsByWithPromise(fieldName: string, fieldValue: any): Promise<any[]>;
+
+retrieveRowsByIdsWithPromise(ids: number[]): Promise<any[]>;
+
+retrieveRowsByIsNullWithPromise(fieldName: string): Promise<any[]>;
+
+retrieveRowsByNotEqualWithPromise(fieldName: string, fieldValue: any): Promise<any[]>;
+
+setFieldNullWhereWithPromise(fieldName: string, fieldValue: any): Promise<number>;
+
+deleteRowsByWithPromise(fieldName: string, fieldValue: any): Promise<number>;
+
+countRowsByValueWithPromise(fieldName: string, fieldValue: any): Promise<number>;
+```
+
+The the following methods are used to set the optional created and updated timestamp columns names: 
+
+```
 setCreatedColumnName(value: string): void;
 setUpdatedColumnName(value: string): void;
 ```
@@ -165,171 +219,157 @@ updated     string          non-null
 
 ### Example ProductsGateway
 
-```typescript
-import {IPool} from "mysql";
+```
+import {Pool} from "mysql";
+
 import {Product} from "../entities/Product";
 import {TableGateway} from "../../src/TableGateway";
-
 
 export class ProductsGateway {
     private tableName: string = 'products';
     private tableGateway: TableGateway;
 
-    constructor(connectionPool: IPool) {
+    constructor(connectionPool: Pool) {
         this.tableGateway = new TableGateway(connectionPool, this.tableName);
         this.tableGateway.setCreatedColumnName('created');
         this.tableGateway.setUpdatedColumnName('updated');
     }
 
-    public createRow(product: Product, callback: (err: Error, insertId: number) => void) {
-        let row = ProductsGateway.mapProductToRow(product);
-        this.tableGateway.createRow(row, callback);
-    }
-
-    public retrieveRow(id: number, callback: (err: Error, product: Product) => void) {
-        this.tableGateway.retrieveRow(id, retrieveRowCallback);
-
-        function retrieveRowCallback(err: Error, row: Object[]) {
-            if(err) {
-                callback(err, null);
-            } else if(row) {
-                let product = ProductsGateway.mapRowToProduct(row);
-                callback(null, product);
-            } else {
-                callback(null, null);
-            }
+    public async createRow(product: Product, callback: (err: Error, insertId: number) => void) {
+        try {
+            let row = ProductsGateway.mapProductToRow(product);
+            const insertId = await this.tableGateway.createRowWithPromise(row);
+            callback(null, insertId);
+        }
+        catch(e) {
+            const err: Error = e;
+            callback(err, null);
         }
     }
 
-    public updateRow(product: Product, callback: (err: Error, affectedRows: number) => void) {
-        let row = ProductsGateway.mapProductToRow(product);
-        this.tableGateway.updateRow(row, updateRowCallback);
-
-        function updateRowCallback(err: Error, affectedRows: number) {
-            if(err) {
-                callback(err, null);
-            } else {
-                callback(null, affectedRows);
-            }
+    public async retrieveRow(id: number, callback: (err: Error, product: Product) => void) {
+        try {
+            const row     = await this.tableGateway.retrieveRowWithPromise(id);
+            const product = ProductsGateway.mapRowToProduct(row);
+            callback(null, product);
+        }
+        catch(e) {
+            callback(e, null);
         }
     }
 
-    public deleteRow(id: number, callback: (err: Error, affectedRows: number) => void) {
-        this.tableGateway.deleteRow(id, callback);
-    }
-
-    public retrieveByDescription(description: string,
-                                 callback: (err: Error, products: Product[]) => void) {
-        this.tableGateway.retrieveRowsBy('description', description, retrieveRowsCallback);
-
-        function retrieveRowsCallback(err: Error, rows: any[]) {
-            if(err) {
-                callback(err, null);
-            } else {
-                let products = [];
-
-                for(let i = 0; i < rows.length; i++) {
-                    let product = ProductsGateway.mapRowToProduct(rows[i]);
-                    products.push(product);
-                }
-
-                callback(null, products);
-            }
+    public async updateRow(product: Product, callback: (err: Error, affectedRows: number) => void) {
+        try {
+            const row = ProductsGateway.mapProductToRow(product);
+            const affectedRows = await this.tableGateway.updateRowWithPromise(row);
+            callback(null, affectedRows);
+        }
+        catch(e) {
+            callback(e, null);
         }
     }
 
-    public retrieveByIds(ids: number[], callback: (err: Error, products: Product[]) => void) {
-        this.tableGateway.retrieveRowsByIds(ids, retrieveRowsCallback);
-
-        function retrieveRowsCallback(err: Error, rows: any[]) {
-            if(err) {
-                callback(err, null);
-            } else {
-                let products = [];
-
-                for(let i = 0; i < rows.length; i++) {
-                    let p = ProductsGateway.mapRowToProduct(rows[i]);
-                    products.push(p);
-                }
-
-                callback(null, products);
-            }
+    public async deleteRow(id: number, callback: (err: Error, affectedRows: number) => void) {
+        try {
+            const affectedRows = await this.tableGateway.deleteRowWithPromise(id);
+            callback(null, affectedRows);
+        }
+        catch(e) {
+            callback(e, null);
         }
     }
 
-    public retrieveByNullDescription(callback: (err: Error, products: Product[]) => void) {
-        this.tableGateway.retrieveRowsByIsNull('description', retrieveCallback);
-
-        function retrieveCallback(err: Error, rows: any[]) {
-            if(err) {
-                callback(err, null);
-            } else {
-                let products = [];
-
-                for(let i = 0; i < rows.length; i++) {
-                    let p = ProductsGateway.mapRowToProduct(rows[i]);
-                    products.push(p);
-                }
-
-                callback(null, products);
-            }
+    public async retrieveByDescription(description: string,
+                                       callback: (err: Error, products: Product[]) => void) {
+        try {
+            const rows = await this.tableGateway.retrieveRowsByWithPromise('description', description);
+            const products = [];
+            rows.map((row: any) => {
+                const product = ProductsGateway.mapRowToProduct(row);
+                products.push(product);
+            });
+            callback(null, products);
+        }
+        catch(e) {
+            callback(e, null);
         }
     }
 
-    public retrieveByDescriptionNotEqual(description: string,
-                                         callback: (err: Error, products: Product[]) => void) {
-        this.tableGateway.retrieveRowsByNotEqual('description', description, retrieveRowsCallback);
-
-        function retrieveRowsCallback(err: Error, rows: any[]) {
-            if(err) {
-                callback(err, null);
-            } else {
-                let products = [];
-
-                for(let i = 0; i < rows.length; i++) {
-                    let p = ProductsGateway.mapRowToProduct(rows[i]);
-                    products.push(p);
-                }
-
-                callback(null, products);
-            }
+    public async retrieveByIds(ids: number[], callback: (err: Error, products: Product[]) => void) {
+        try {
+            const rows = await this.tableGateway.retrieveRowsByIdsWithPromise(ids);
+            const products = [];
+            rows.map((row: any) => {
+                const p = ProductsGateway.mapRowToProduct(row);
+                products.push(p);
+            });
+            callback(null, products);
+        }
+        catch(e) {
+            callback(e, null);
         }
     }
 
-    public setDescriptionNullWhereNameIs(value: string,
-                                         callback: (err: Error, affectedRows: number) => void) {
-        this.tableGateway.setFieldNullWhere('description', value, setFieldNullCallback);
-
-        function setFieldNullCallback(err: Error, affectedRows: number) {
-            if(err) {
-                callback(err, null);
-            } else {
-                callback(null, affectedRows);
-            }
+    public async retrieveByNullDescription(callback: (err: Error, products: Product[]) => void) {
+        try {
+            const rows = await this.tableGateway.retrieveRowsByIsNullWithPromise('description');
+            const products = [];
+            rows.map((row: any) => {
+                const p = ProductsGateway.mapRowToProduct(row);
+                products.push(p);
+            });
+            callback(null, products);
+        }
+        catch(e) {
+            callback(e, null);
         }
     }
 
-    public deleteWhereNameIs(name: string, callback: (err: Error, affectedRows: number) => any) {
-        this.tableGateway.deleteRowsBy('name', name, setFieldNullCallback);
-
-        function setFieldNullCallback(err: Error, affectedRows: number) {
-            if(err) {
-                callback(err, null);
-            } else {
-                callback(null, affectedRows);
-            }
+    public async retrieveByDescriptionNotEqual(description: string,
+                                               callback: (err: Error, products: Product[]) => void) {
+        try {
+            const gateway  = this.tableGateway;
+            const rows     = await gateway.retrieveRowsByNotEqualWithPromise('description', description);
+            const products = [];
+            rows.map((row: any) => {
+                const p = ProductsGateway.mapRowToProduct(row);
+                products.push(p);
+            });
+            callback(null, products);
+        }
+        catch(e) {
+            callback(e, null);
         }
     }
 
-    public countProductsByName(name: string, callback: (err: Error, count: number) => void) {
-        this.tableGateway.countRowsByValue('name', name, countRowsByValueCallback);
+    public async setDescriptionNullWhereNameIs(value: string,
+                                               callback: (err: Error, affectedRows: number) => void) {
+        try {
+            const affectedRows = await this.tableGateway.setFieldNullWhereWithPromise('description', value);
+            callback(null, affectedRows);
+        }
+        catch(e) {
+            callback(e, null);
+        }
+    }
 
-        function countRowsByValueCallback(err: Error, count: number) {
-            if(err) {
-                callback(err, null);
-            } else {
-                callback(null, count);
-            }
+    public async deleteWhereNameIs(name: string, callback: (err: Error, affectedRows: number) => any) {
+        try {
+            const affectedRows = await this.tableGateway.deleteRowsByWithPromise('name', name);
+            callback(null, affectedRows);
+        }
+        catch(e) {
+            callback(e, null);
+        }
+    }
+
+    public async countProductsByName(name: string, callback: (err: Error, count: number) => void) {
+        try {
+            const count = await this.tableGateway.countRowsByValueWithPromise('name', name);
+            callback(null, count);
+        }
+        catch(e) {
+            callback(e, null);
         }
     }
 
@@ -345,6 +385,8 @@ export class ProductsGateway {
     }
 
     private static mapRowToProduct(row: Object): Product {
+        if(row == null) { return null; }
+
         let product = new Product();
         product.setId(row['id']);
         product.setName(row['name']);
@@ -356,7 +398,6 @@ export class ProductsGateway {
         return product;
     }
 }
-
 ```
 
 ### Data Mapping
@@ -368,7 +409,7 @@ entity object.
 
 Here is an example of data mapper functions:
 
-```typescript
+```
 private static mapProductToRow(product: Product): Object {
     return {
         'id':          product.getId(),
@@ -393,6 +434,7 @@ private static mapRowToProduct(row: Object): Product {
 }
 ```
 
+It is also possible to forgo data mappers and return the results directly.
 
 ### JoinTableGateway
 
@@ -402,10 +444,12 @@ associative table that represents a many-to-many relationship.
 As a review, a join table must consist of two fields, at a minimum. 
 Each field is a foreign-key to another table. Optionally, a column
 with a timestamp to represent the time created is provided as well.
+It is assumed that the combination of the two foreign key fields
+is unique.
 
 ### Example JoinTableGateway
 
-```typescript
+```
 import {IPool} from "mysql";
 import {JoinTableGateway} from "../../src/JoinTableGateway";
 
@@ -461,17 +505,7 @@ export class OrdersProductsGateway {
 }
 ```
 
-## Development
 
-Commands:
-
-```
-Mac:
-./db-migrate.sh up -e test
-
-Linux:
-./node_modules/db-migrate/bin/db-migrate up -e test
-```
 
 
 
