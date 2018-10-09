@@ -1,5 +1,5 @@
 "use strict";
-var config = {
+let config = {
     host: 'localhost',
     port: 3306,
     database: 'mydal_test',

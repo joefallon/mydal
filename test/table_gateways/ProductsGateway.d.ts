@@ -15,6 +15,6 @@ export declare class ProductsGateway {
     setDescriptionNullWhereNameIs(value: string, callback: (err: Error, affectedRows: number) => void): Promise<void>;
     deleteWhereNameIs(name: string, callback: (err: Error, affectedRows: number) => any): Promise<void>;
     countProductsByName(name: string, callback: (err: Error, count: number) => void): Promise<void>;
-    private static mapProductToRow(product);
-    private static mapRowToProduct(row);
+    private static mapProductToRow;
+    private static mapRowToProduct;
 }

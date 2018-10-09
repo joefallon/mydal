@@ -27,15 +27,14 @@
   },
   "homepage": "https://github.com/joefallon/mydal#readme",
   "devDependencies": {
-    "@types/mocha": "^5.2.3",
+    "@types/mocha": "^5.2.5",
     "@types/mysql": "^2.15.5",
     "assert": "^1.4.1",
     "mocha": "^5.2.0"
   },
   "dependencies": {
     "@joefallon/mysql-date": "^0.1.2",
-    "es6-promise": "^4.2.4",
-    "mysql": "^2.15.0",
-    "tslib": "^1.9.2"
+    "mysql": "^2.16.0",
+    "tslib": "^1.9.3"
   }
 }

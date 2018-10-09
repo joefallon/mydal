@@ -1,13 +1,11 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-var config = require("./main");
-var mysql = require("mysql");
-var ConnectionPoolTestFactory = /** @class */ (function () {
-    function ConnectionPoolTestFactory() {
-    }
-    ConnectionPoolTestFactory.create = function () {
+const config = require("./main");
+const mysql = require("mysql");
+class ConnectionPoolTestFactory {
+    static create() {
         if (ConnectionPoolTestFactory.pool == null) {
-            var connectionOptions = {
+            let connectionOptions = {
                 host: config.host,
                 port: config.port,
                 database: config.database,
@@ -19,8 +17,7 @@ var ConnectionPoolTestFactory = /** @class */ (function () {
             ConnectionPoolTestFactory.pool = mysql.createPool(connectionOptions);
         }
         return ConnectionPoolTestFactory.pool;
-    };
-    return ConnectionPoolTestFactory;
-}());
+    }
+}
 exports.ConnectionPoolTestFactory = ConnectionPoolTestFactory;
-//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiQ29ubmVjdGlvblBvb2xUZXN0RmFjdG9yeS5qcyIsInNvdXJjZVJvb3QiOiIiLCJzb3VyY2VzIjpbIkNvbm5lY3Rpb25Qb29sVGVzdEZhY3RvcnkudHMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6Ijs7QUFBQSwrQkFBa0M7QUFDbEMsNkJBQWlDO0FBR2pDO0lBQUE7SUFvQkEsQ0FBQztJQWpCaUIsZ0NBQU0sR0FBcEI7UUFDSSxJQUFHLHlCQUF5QixDQUFDLElBQUksSUFBSSxJQUFJLEVBQUU7WUFDdkMsSUFBSSxpQkFBaUIsR0FBZTtnQkFDaEMsSUFBSSxFQUFhLE1BQU0sQ0FBQyxJQUFJO2dCQUM1QixJQUFJLEVBQWEsTUFBTSxDQUFDLElBQUk7Z0JBQzVCLFFBQVEsRUFBUyxNQUFNLENBQUMsUUFBUTtnQkFDaEMsSUFBSSxFQUFhLE1BQU0sQ0FBQyxJQUFJO2dCQUM1QixRQUFRLEVBQVMsTUFBTSxDQUFDLFFBQVE7Z0JBQ2hDLGVBQWUsRUFBRSxNQUFNLENBQUMsZUFBZTtnQkFDdkMsV0FBVyxFQUFNLE1BQU0sQ0FBQyxXQUFXO2FBQ3RDLENBQUM7WUFFRix5QkFBeUIsQ0FBQyxJQUFJLEdBQUcsS0FBSyxDQUFDLFVBQVUsQ0FBQyxpQkFBaUIsQ0FBQyxDQUFDO1NBQ3hFO1FBRUQsT0FBTyx5QkFBeUIsQ0FBQyxJQUFJLENBQUM7SUFDMUMsQ0FBQztJQUNMLGdDQUFDO0FBQUQsQ0FBQyxBQXBCRCxJQW9CQztBQXBCWSw4REFBeUIifQ==
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiQ29ubmVjdGlvblBvb2xUZXN0RmFjdG9yeS5qcyIsInNvdXJjZVJvb3QiOiIiLCJzb3VyY2VzIjpbIkNvbm5lY3Rpb25Qb29sVGVzdEZhY3RvcnkudHMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6Ijs7QUFBQSxpQ0FBa0M7QUFDbEMsK0JBQWlDO0FBR2pDLE1BQWEseUJBQXlCO0lBRzNCLE1BQU0sQ0FBQyxNQUFNO1FBQ2hCLElBQUcseUJBQXlCLENBQUMsSUFBSSxJQUFJLElBQUksRUFBRTtZQUN2QyxJQUFJLGlCQUFpQixHQUFlO2dCQUNoQyxJQUFJLEVBQWEsTUFBTSxDQUFDLElBQUk7Z0JBQzVCLElBQUksRUFBYSxNQUFNLENBQUMsSUFBSTtnQkFDNUIsUUFBUSxFQUFTLE1BQU0sQ0FBQyxRQUFRO2dCQUNoQyxJQUFJLEVBQWEsTUFBTSxDQUFDLElBQUk7Z0JBQzVCLFFBQVEsRUFBUyxNQUFNLENBQUMsUUFBUTtnQkFDaEMsZUFBZSxFQUFFLE1BQU0sQ0FBQyxlQUFlO2dCQUN2QyxXQUFXLEVBQU0sTUFBTSxDQUFDLFdBQVc7YUFDdEMsQ0FBQztZQUVGLHlCQUF5QixDQUFDLElBQUksR0FBRyxLQUFLLENBQUMsVUFBVSxDQUFDLGlCQUFpQixDQUFDLENBQUM7U0FDeEU7UUFFRCxPQUFPLHlCQUF5QixDQUFDLElBQUksQ0FBQztJQUMxQyxDQUFDO0NBQ0o7QUFwQkQsOERBb0JDIn0=

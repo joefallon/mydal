@@ -1,13 +1,16 @@
 import { Pool } from "mysql";
 export declare class OrdersProductsGateway {
-    private tableName;
-    private id1Name;
-    private id2Name;
+    private readonly tableName;
+    private readonly id1Name;
+    private readonly id2Name;
     private joinTableGateway;
     constructor(connectionPool: Pool);
-    createRow(id1: number, id2: number, callback: (err: Error, isSuccess: boolean) => void): Promise<void>;
-    retrieveRow(id1: number, id2: number, callback: (err: Error, row: any[]) => void): Promise<void>;
+    createRow(id1: number, id2: number): Promise<boolean>;
+    retrieveRow(id1: number, id2: number): Promise<any>;
     deleteRow(id1: number, id2: number, callback: (err: Error, affectedRows: number) => void): Promise<void>;
+    deleteRowWithPromise(id1: number, id2: number): Promise<number>;
     retrieveByTable1Id(id1: number, callback: (err: Error, rows: any[]) => void): Promise<void>;
+    retrieveByTable1IdWithPromise(id1: number): Promise<any[]>;
     deleteByTable1Id(id1: number, callback: (err: Error, affectedRows: number) => void): Promise<void>;
+    deleteByTable1IdWithPromise(id1: number): Promise<number>;
 }

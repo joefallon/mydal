@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
     "alwaysStrict": true,
+    "declaration": true,
     "downlevelIteration": true,
     "importHelpers": true,
     "inlineSourceMap": true,
@@ -10,8 +11,9 @@
     "pretty": true,
     "skipLibCheck": true,
     "strictFunctionTypes": true,
-    "target": "es5",
-    "lib": [ "es6" ]
+    "strictNullChecks": false,
+    "target": "es6",
+    "lib": ["es6"]
   },
   "exclude": [
     "node_modules"
