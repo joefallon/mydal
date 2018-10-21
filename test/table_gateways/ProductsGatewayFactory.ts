@@ -3,7 +3,7 @@ import {ProductsGateway} from './ProductsGateway';
 
 export class ProductsGatewayFactory {
 
-    public static create() {
+    public static create(): ProductsGateway {
         let pool = ConnectionPoolTestFactory.create();
         let gateway = new ProductsGateway(pool);
 

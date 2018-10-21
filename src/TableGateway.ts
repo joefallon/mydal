@@ -44,7 +44,7 @@ export class TableGateway {
             const columnNames  = TableGateway.getColumnNames(row);
             const placeholders = TableGateway.getPlaceholders(row);
 
-            let sql = `INSERT INTO ${tableName} ( ${columnNames} ) VALUES ( ${placeholders} )`;
+            let sql      = `INSERT INTO ${tableName} ( ${columnNames} ) VALUES ( ${placeholders} )`;
             const values = TableGateway.getObjectValues(row);
             sql = mysql.format(sql, values);
 
@@ -243,7 +243,7 @@ export class TableGateway {
 
             let idsString = ids.join(', ');
             let sql = 'SELECT * FROM `' + table + '` WHERE `'
-                + primaryKey + '` IN (' + idsString + ') ORDER BY `' + primaryKey + '`';
+                    + primaryKey + '` IN (' + idsString + ') ORDER BY `' + primaryKey + '`';
 
             let connection: PoolConnection = null;
             this._pool.getConnection(performQuery);

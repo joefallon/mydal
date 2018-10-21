@@ -1,20 +1,53 @@
 import { Pool } from "mysql";
 import { Product } from "../entities/Product";
 export declare class ProductsGateway {
-    private tableName;
-    private tableGateway;
+    private static readonly TABLE_NAME;
+    private readonly _tableGateway;
     constructor(connectionPool: Pool);
-    createRow(product: Product, callback: (err: Error, insertId: number) => void): Promise<void>;
-    retrieveRow(id: number, callback: (err: Error, product: Product) => void): Promise<void>;
-    updateRow(product: Product, callback: (err: Error, affectedRows: number) => void): Promise<void>;
-    deleteRow(id: number, callback: (err: Error, affectedRows: number) => void): Promise<void>;
-    retrieveByDescription(description: string, callback: (err: Error, products: Product[]) => void): Promise<void>;
-    retrieveByIds(ids: number[], callback: (err: Error, products: Product[]) => void): Promise<void>;
-    retrieveByNullDescription(callback: (err: Error, products: Product[]) => void): Promise<void>;
-    retrieveByDescriptionNotEqual(description: string, callback: (err: Error, products: Product[]) => void): Promise<void>;
-    setDescriptionNullWhereNameIs(value: string, callback: (err: Error, affectedRows: number) => void): Promise<void>;
-    deleteWhereNameIs(name: string, callback: (err: Error, affectedRows: number) => any): Promise<void>;
-    countProductsByName(name: string, callback: (err: Error, count: number) => void): Promise<void>;
+    /**
+     * @returns Returns the insert id of the row.
+     */
+    createRow(product: Product): Promise<number>;
+    /**
+     * @returns Retrieves the row with the given id if found, null otherwise.
+     */
+    retrieveRow(id: number): Promise<Product>;
+    /**
+     * @returns Returns the number of affected rows (0 or 1).
+     */
+    updateRow(product: Product): Promise<number>;
+    /**
+     * @returns Returns the number of affected rows (0 or 1).
+     */
+    deleteRow(id: number): Promise<number>;
+    /**
+     * @returns Returns an array of products.
+     */
+    retrieveByDescription(description: string): Promise<Product[]>;
+    /**
+     * @returns Returns an array of Products.
+     */
+    retrieveByIds(ids: number[]): Promise<Product[]>;
+    /**
+     * @returns Returns an array of Products.
+     */
+    retrieveByNullDescription(): Promise<Product[]>;
+    /**
+     * @returns Returns an array of Products.
+     */
+    retrieveByDescriptionNotEqual(description: string): Promise<Product[]>;
+    /**
+     * @returns Returns the number of affected rows.
+     */
+    setDescriptionNullWhereNameIs(value: string): Promise<number>;
+    /**
+     * @returns Returns the number of affected rows.
+     */
+    deleteWhereNameIs(name: string): Promise<number>;
+    /**
+     * @returns Returns the count.
+     */
+    countProductsByName(name: string): Promise<number>;
     private static mapProductToRow;
     private static mapRowToProduct;
 }
