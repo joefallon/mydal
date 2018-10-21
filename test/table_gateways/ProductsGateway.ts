@@ -1,7 +1,7 @@
 import {Pool} from "mysql";
 
-import {Product} from "../entities/Product";
 import {TableGateway} from "../../src/TableGateway";
+import { Product } from '../entities/Product';
 
 export class ProductsGateway {
     private static readonly TABLE_NAME = 'products';
@@ -18,30 +18,21 @@ export class ProductsGateway {
      * @returns Returns the insert id of the row.
      */
     public async createRow(product: Product): Promise<number> {
-        let row        = ProductsGateway.mapProductToRow(product);
-        const insertId = await this._tableGateway.createRow(row);
-
-        return insertId;
+        return this._tableGateway.createRow(product);
     }
 
     /**
      * @returns Retrieves the row with the given id if found, null otherwise.
      */
     public async retrieveRow(id: number): Promise<Product> {
-        const row     = await this._tableGateway.retrieveRow(id);
-        const product = ProductsGateway.mapRowToProduct(row);
-
-        return product;
+        return this._tableGateway.retrieveRow(id);
     }
 
     /**
      * @returns Returns the number of affected rows (0 or 1).
      */
     public async updateRow(product: Product): Promise<number> {
-        const row          = ProductsGateway.mapProductToRow(product);
-        const affectedRows = await this._tableGateway.updateRow(row);
-
-        return affectedRows;
+        return this._tableGateway.updateRow(product);
     }
 
     /**
@@ -55,110 +46,48 @@ export class ProductsGateway {
      * @returns Returns an array of products.
      */
     public async retrieveByDescription(description: string): Promise<Product[]> {
-        const rows     = await this._tableGateway.retrieveRows('description', description);
-        const products = [];
-        rows.map((row: any) => {
-            const product = ProductsGateway.mapRowToProduct(row);
-            products.push(product);
-        });
-
-        return products;
+        return this._tableGateway.retrieveRows('description', description);
     }
 
     /**
      * @returns Returns an array of Products.
      */
     public async retrieveByIds(ids: number[]): Promise<Product[]> {
-        const rows     = await this._tableGateway.retrieveRowsByIds(ids);
-        const products = [];
-        rows.map((row: any) => {
-            const p = ProductsGateway.mapRowToProduct(row);
-            products.push(p);
-        });
-
-        return products;
+        return this._tableGateway.retrieveRowsByIds(ids);
     }
 
     /**
      * @returns Returns an array of Products.
      */
     public async retrieveByNullDescription(): Promise<Product[]> {
-        const rows     = await this._tableGateway.retrieveRowsByIsNull('description');
-        const products = [];
-
-        rows.map((row: any) => {
-            const p = ProductsGateway.mapRowToProduct(row);
-            products.push(p);
-        });
-
-        return products;
+        return this._tableGateway.retrieveRowsByIsNull('description');
     }
 
     /**
      * @returns Returns an array of Products.
      */
     public async retrieveByDescriptionNotEqual(description: string): Promise<Product[]> {
-        const gateway  = this._tableGateway;
-        const rows     = await gateway.retrieveRowsByNotEqual('description', description);
-        const products = [];
-
-        rows.map((row: any) => {
-            const p = ProductsGateway.mapRowToProduct(row);
-            products.push(p);
-        });
-
-        return products;
+        return this._tableGateway.retrieveRowsByNotEqual('description', description);
     }
 
     /**
      * @returns Returns the number of affected rows.
      */
     public async setDescriptionNullWhereNameIs(value: string): Promise<number> {
-        const affectedRows = await this._tableGateway.setFieldNullWhere('description', value);
-
-        return affectedRows;
+        return this._tableGateway.setFieldNullWhere('description', value);
     }
 
     /**
      * @returns Returns the number of affected rows.
      */
     public async deleteWhereNameIs(name: string): Promise<number> {
-        const affectedRows = await this._tableGateway.deleteRowsBy('name', name);
-
-        return affectedRows;
+        return this._tableGateway.deleteRowsBy('name', name);
     }
 
     /**
      * @returns Returns the count.
      */
     public async countProductsByName(name: string): Promise<number> {
-        const count = await this._tableGateway.countRowsByValue('name', name);
-
-        return count;
-    }
-
-    private static mapProductToRow(product: Product): Object {
-        return {
-            'id':          product.getId(),
-            'name':        product.getName(),
-            'description': product.getDescription(),
-            'price':       product.getPrice(),
-            'created':     product.getCreated(),
-            'updated':     product.getUpdated()
-        };
-    }
-
-    private static mapRowToProduct(row: Object): Product {
-        if(row == null) { return null; }
-
-        let product = new Product();
-        product.setId(row['id']);
-        product.setName(row['name']);
-        product.setDescription(row['description']);
-        product.setPrice(row['price']);
-        product.setCreated(row['created']);
-        product.setUpdated(row['updated']);
-
-        return product;
+        return this._tableGateway.countRowsByValue('name', name);
     }
 }

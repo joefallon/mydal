@@ -1,5 +1,5 @@
 import { Pool } from "mysql";
-import { Product } from "../entities/Product";
+import { Product } from '../entities/Product';
 export declare class ProductsGateway {
     private static readonly TABLE_NAME;
     private readonly _tableGateway;
@@ -48,6 +48,4 @@ export declare class ProductsGateway {
      * @returns Returns the count.
      */
     countProductsByName(name: string): Promise<number>;
-    private static mapProductToRow;
-    private static mapRowToProduct;
 }
