@@ -5,9 +5,9 @@ export declare class ProductsGateway {
     private readonly _tableGateway;
     constructor(connectionPool: Pool);
     /**
-     * @returns Returns the insert id of the row.
+     * @returns The inserted Product.
      */
-    createRow(product: Product): Promise<number>;
+    createRow(product: Product): Promise<Product>;
     /**
      * @returns Retrieves the row with the given id if found, null otherwise.
      */

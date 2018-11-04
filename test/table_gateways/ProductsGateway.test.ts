@@ -13,11 +13,10 @@ describe('ProductsGateway', () => {
             product.price       = 1.11;
 
             let productsGateway = ProductsGatewayFactory.create();
-            let id  = await productsGateway.createRow(product);
-            product = await productsGateway.retrieveRow(id);
+            product = await productsGateway.createRow(product);
+            product = await productsGateway.retrieveRow(product.id);
 
             assert.strictEqual(product.description, 'test desc');
-            assert.strictEqual(product.id, id);
             assert.strictEqual(product.name, 'test name');
             assert.strictEqual(product.price, 1.11);
 
@@ -37,8 +36,8 @@ describe('ProductsGateway', () => {
             product.price = 1.11;
 
             const productsGateway = ProductsGatewayFactory.create();
-            const id = await productsGateway.createRow(product);
-            product  = await productsGateway.retrieveRow(id);
+            product = await productsGateway.createRow(product);
+            product = await productsGateway.retrieveRow(product.id);
 
             product.description = 'updated desc';
             product.name  = 'updated name';
@@ -47,10 +46,9 @@ describe('ProductsGateway', () => {
             const affectedRows = await productsGateway.updateRow(product);
             assert.strictEqual(affectedRows, 1, 'affected rows');
 
-            product = await productsGateway.retrieveRow(id);
+            product = await productsGateway.retrieveRow(product.id);
 
             assert.strictEqual(product.description, 'updated desc');
-            assert.strictEqual(product.id, id);
             assert.strictEqual(product.name, 'updated name');
             assert.strictEqual(product.price, 2.22);
 
@@ -71,48 +69,48 @@ describe('ProductsGateway', () => {
 
             let productsGateway = ProductsGatewayFactory.create();
 
-            const id       = await productsGateway.createRow(product);
-            const affected = await productsGateway.deleteRow(id);
+            product        = await productsGateway.createRow(product);
+            const affected = await productsGateway.deleteRow(product.id);
             assert.strictEqual(affected, 1);
 
-            product = await productsGateway.retrieveRow(id);
+            product = await productsGateway.retrieveRow(product.id);
             assert.strictEqual(product, null);
         });
     });
 
     describe('#retrieveRowsBy', () => {
         it('retrieves all rows with the given field value', async () => {
-            const product1       = new Product();
+            let product1       = new Product();
             product1.name        = 'retrieveRowsBy1';
             product1.description = 'retrieveRowsByDesc';
             product1.price       = 1.11;
 
-            const product2       = new Product();
+            let product2       = new Product();
             product2.name        = 'retrieveRowsBy2';
             product2.description = 'retrieveRowsByDesc';
             product2.price       = 2.22;
 
             const productsGateway = ProductsGatewayFactory.create();
 
-            let [id1, id2] = await Promise.all([
+            [product1, product2] = await Promise.all([
                 productsGateway.createRow(product1),
                 productsGateway.createRow(product2)
             ]);
 
             // enforce ordering
-            if(id1 > id2) {
-                let temp = id1;
-                id1 = id2;
-                id2 = temp;
+            if(product1.id > product2.id) {
+                let temp = product1;
+                product1 = product2;
+                product2 = temp;
             }
 
             const products = await productsGateway.retrieveByDescription('retrieveRowsByDesc');
 
             const p1 = products[0];
-            assert.strictEqual(p1.id, id1, 'p1 id mismatch');
+            assert.strictEqual(p1.id, product1.id, 'p1 id mismatch');
 
             const p2 = products[1];
-            assert.strictEqual(p2.id, id2, 'p2 id mismatch');
+            assert.strictEqual(p2.id, product2.id, 'p2 id mismatch');
         });
     });
 
@@ -130,58 +128,58 @@ describe('ProductsGateway', () => {
 
             let productsGateway = ProductsGatewayFactory.create();
 
-            let [id1, id2] = await Promise.all([
+            [product1, product2] = await Promise.all([
                 productsGateway.createRow(product1),
                 productsGateway.createRow(product2)
             ]);
 
             // enforce ordering
-            if(id1 > id2) {
-                let temp = id1;
-                id1 = id2;
-                id2 = temp;
+            if(product1.id > product2.id) {
+                let temp = product1;
+                product1 = product2;
+                product2 = temp;
             }
 
-            const products = await productsGateway.retrieveByIds([id1, id2]);
+            const products = await productsGateway.retrieveByIds([product1.id, product2.id]);
 
             let p1 = products[0];
-            assert.strictEqual(p1.id, id1);
+            assert.strictEqual(p1.id, product1.id);
 
             let p2 = products[1];
-            assert.strictEqual(p2.id, id2);
+            assert.strictEqual(p2.id, product2.id);
         });
     });
 
     describe('#retrieveRowsByIsNull', () => {
         it('retrieves products with a NULL description', async () => {
-            const product1 = new Product();
+            let product1 = new Product();
             product1.name  = 'retrieveRowsByIds1';
             product1.price = 1.11;
 
-            const product2 = new Product();
+            let product2 = new Product();
             product2.name  = 'retrieveRowsByIds2';
             product2.price = 2.22;
 
             const productsGateway = ProductsGatewayFactory.create();
-            let [id1, id2] = await Promise.all([
+            [product1, product2] = await Promise.all([
                 productsGateway.createRow(product1),
                 productsGateway.createRow(product2)
             ]);
 
             // enforce ordering
-            if(id1 > id2) {
-                let temp = id1;
-                id1 = id2;
-                id2 = temp;
+            if(product1.id > product2.id) {
+                let temp = product1;
+                product1 = product2;
+                product2 = temp;
             }
 
             const products = await productsGateway.retrieveByNullDescription();
 
             const p1 = products[0];
-            assert.strictEqual(p1.id, id1, 'p1 id mismatch');
+            assert.strictEqual(p1.id, product1.id, 'p1 id mismatch');
 
             const p2 = products[1];
-            assert.strictEqual(p2.id, id2, 'p2 id mismatch');
+            assert.strictEqual(p2.id, product2.id, 'p2 id mismatch');
         });
     });
 
@@ -222,7 +220,7 @@ describe('ProductsGateway', () => {
             product2.price       = 2.22;
 
             let productsGateway = ProductsGatewayFactory.create();
-            let [id1, id2] = await Promise.all([
+            [product1, product2] = await Promise.all([
                 productsGateway.createRow(product1),
                 productsGateway.createRow(product2)
             ]);
@@ -231,50 +229,50 @@ describe('ProductsGateway', () => {
             const affectedRows = await productsGateway.setDescriptionNullWhereNameIs(desc);
             assert.strictEqual(affectedRows, 1);
 
-            let [p1, p2] = await Promise.all([
-                productsGateway.retrieveRow(id1),
-                productsGateway.retrieveRow(id2)
+            [product1, product2] = await Promise.all([
+                productsGateway.retrieveRow(product1.id),
+                productsGateway.retrieveRow(product2.id)
             ]);
 
-            assert.strictEqual(p1.description, 'null description 1');
-            assert.strictEqual(p2.description, null);
+            assert.strictEqual(product1.description, 'null description 1');
+            assert.strictEqual(product2.description, null);
         });
     });
 
     describe('#deleteRowsBy', () => {
         it('deletes rows where name is', async () => {
-            const product1       = new Product();
+            let product1       = new Product();
             product1.name        = 'deletes rows name 1';
             product1.description = 'description 1';
             product1.price       = 1.11;
 
-            const product2       = new Product();
+            let product2       = new Product();
             product2.name        = 'deletes rows name 2';
             product2.description = 'description 2';
             product2.price       = 2.22;
 
             const productsGateway = ProductsGatewayFactory.create();
-            let [id1, id2] = await Promise.all([
+            [product1, product2] = await Promise.all([
                 productsGateway.createRow(product1),
                 productsGateway.createRow(product2)
             ]);
 
             // enforce ordering
-            if(id1 > id2) {
-                let temp = id1;
-                id1 = id2;
-                id2 = temp;
+            if(product1.id > product2.id) {
+                let temp = product1;
+                product1 = product2;
+                product2 = temp;
             }
 
             const desc = 'deletes rows name 1';
             const affectedRows = await productsGateway.deleteWhereNameIs(desc);
             assert.strictEqual(affectedRows, 1);
 
-            const products = await productsGateway.retrieveByIds([id1, id2]);
+            const products = await productsGateway.retrieveByIds([product1.id, product2.id]);
             assert.strictEqual(products.length, 1);
 
-            const p1 = products[0];
-            assert.strictEqual(p1.description, 'description 2');
+            product1 = products[0];
+            assert.strictEqual(product1.description, 'description 2');
         });
     });
 

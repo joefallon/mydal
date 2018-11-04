@@ -1,6 +1,6 @@
 {
   "name": "mydal",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "A simple data access layer and table gateway implementation for MySQL.",
   "main": "index.js",
   "types": "index.d.ts",

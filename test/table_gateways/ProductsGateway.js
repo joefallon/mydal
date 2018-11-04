@@ -9,7 +9,7 @@ class ProductsGateway {
         this._tableGateway.setUpdatedColumnName('updated');
     }
     /**
-     * @returns Returns the insert id of the row.
+     * @returns The inserted Product.
      */
     createRow(product) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {

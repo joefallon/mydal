@@ -95,7 +95,8 @@ The <code>TableGateway</code> provides the following promise style data access a
 modification methods: 
 
 ```
-createRow(row: any): Promise<number>;
+// Returns the inserted row with the inserted primary key (e.g. id) added.
+createRow(row: any): Promise<any>;
 
 retrieveRow(id: number): Promise<any>;
 
@@ -158,9 +159,9 @@ export class ProductsGateway {
     }
 
     /**
-     * @returns Returns the insert id of the row.
+     * @returns The inserted Product.
      */
-    public async createRow(product: Product): Promise<number> {
+    public async createRow(product: Product): Promise<Product> {
         return this._tableGateway.createRow(product);
     }
 

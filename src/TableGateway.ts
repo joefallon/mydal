@@ -29,9 +29,9 @@ export class TableGateway {
     /**
      * Creates the row in the database.
      *
-     * @returns Returns the inserted ID of the row.
+     * @returns The inserted row with inserted primary key.
      */
-    public createRow(row: any): Promise<number> {
+    public createRow(row: any): Promise<any> {
         return new Promise((resolve, reject) => {
             row = Util.shallowClone(row); // prevents mysql from modifying source object
             const tableName  = this._tableName;
@@ -63,7 +63,13 @@ export class TableGateway {
                     reject(err);
                 }
                 else {
-                    resolve(result['insertId']);
+                    if(result['insertId'] > 0) {
+                        row[primaryKey] = result['insertId'];
+                        resolve(row);
+                    }
+                    else {
+                        resolve(null);
+                    }
                 }
             }
         });

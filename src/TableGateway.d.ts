@@ -11,9 +11,9 @@ export declare class TableGateway {
     /**
      * Creates the row in the database.
      *
-     * @returns Returns the inserted ID of the row.
+     * @returns The inserted row with inserted primary key.
      */
-    createRow(row: any): Promise<number>;
+    createRow(row: any): Promise<any>;
     /**
      * Retrieves a row from the database.
      *

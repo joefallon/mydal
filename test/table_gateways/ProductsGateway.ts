@@ -15,9 +15,9 @@ export class ProductsGateway {
     }
 
     /**
-     * @returns Returns the insert id of the row.
+     * @returns The inserted Product.
      */
-    public async createRow(product: Product): Promise<number> {
+    public async createRow(product: Product): Promise<Product> {
         return this._tableGateway.createRow(product);
     }
 
